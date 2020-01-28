@@ -1,6 +1,6 @@
 //
 //  TimeoutObserver.swift
-//  PSOperation
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/19/20.
 //
@@ -12,7 +12,7 @@ extension Observers {
   
   public struct Timeout {
     
-    private let timeout: TimeInterval
+    public let timeout: TimeInterval
     
     // MARK: -
     

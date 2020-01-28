@@ -22,7 +22,7 @@ public protocol Observer {
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Observer {
   
-  public  func taskDidStart<T: ProducerTaskProtocol>(_ task: T) {}
+  public func taskDidStart<T: ProducerTaskProtocol>(_ task: T) {}
   
   public func task<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol>(_ task: T1, didProduce newTask: T2) {}
   

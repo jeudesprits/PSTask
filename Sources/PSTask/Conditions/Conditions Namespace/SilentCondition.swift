@@ -1,6 +1,6 @@
 //
 //  SilentCondition.swift
-//  PSOperation
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/17/20.
 //
@@ -14,9 +14,11 @@ extension Conditions {
     
     public typealias Failure = Condition.Failure
     
+    // MARK: -
     
-    private let condition: Condition
+    public let condition: Condition
     
+    // MARK: -
     
     public init(condition: Condition) { self.condition = condition }
   }
@@ -25,9 +27,9 @@ extension Conditions {
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Conditions.Silent: TaskCondition {
     
-  public func dependency<O: ProducerOperationProtocol>(for operation: O) -> Operation? { nil }
+  public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { nil }
   
-  public func evaluate<O: ProducerOperationProtocol>(for operation: O, completion: @escaping (Result<Void, Failure>) -> Void) {
-    condition.evaluate(for: operation, completion: completion)
+  public func evaluate<T: ProducerTaskProtocol>(for task: T, completion: @escaping (Result<Void, Failure>) -> Void) {
+    condition.evaluate(for: task, completion: completion)
   }
 }

@@ -1,6 +1,6 @@
 //
 //  OperationCondition.swift
-//  PSOperation
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/2/20.
 //
@@ -12,6 +12,7 @@ public protocol TaskCondition {
   
   associatedtype Failure: Error
   
+  // MARK: -
   
   func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation?
   
@@ -22,15 +23,14 @@ public protocol TaskCondition {
 internal class _AnyTaskConditionBaseBox<Failure: Error>: TaskCondition {
 
   @inlinable
-  internal func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? {
-    _abstract()
-  }
-
+  internal func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { _abstract() }
+  
   @inlinable
   internal func evaluate<T: ProducerTaskProtocol>(for task: T, completion: @escaping (Result<Void, Failure>) -> Void) {
     _abstract()
   }
 
+  // MARK: -
 
   @inlinable
   internal init() {}
@@ -45,11 +45,10 @@ internal final class _AnyTaskConditionBox<Base: TaskCondition>: _AnyTaskConditio
   @usableFromInline
   internal typealias Failure = Error
   
+  // MARK: -
   
   @inlinable
-  internal override func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? {
-    base.dependency(for: task)
-  }
+  internal override func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { base.dependency(for: task) }
 
   @inlinable
   internal override func evaluate<T: ProducerTaskProtocol>(for task: T, completion: @escaping (Result<Void, Failure>) -> Void) {
@@ -57,10 +56,12 @@ internal final class _AnyTaskConditionBox<Base: TaskCondition>: _AnyTaskConditio
     base.evaluate(for: task, completion: newCompletion)
   }
 
+  // MARK: -
 
   @usableFromInline
   internal let base: Base
 
+  // MARK: -
 
   @inlinable
   internal init(_ base: Base) { self.base = base }
@@ -73,22 +74,23 @@ internal final class _AnyTaskConditionBox<Base: TaskCondition>: _AnyTaskConditio
 public struct AnyTaskCondition: TaskCondition {
 
   public typealias Failure = Error
-
+  
+  // MARK: -
 
   @inlinable
-  public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? {
-    box.dependency(for: task)
-  }
+  public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { box.dependency(for: task) }
 
   @inlinable
   public func evaluate<T: ProducerTaskProtocol>(for task: T, completion: @escaping (Result<Void, Failure>) -> Void) {
     box.evaluate(for: task, completion: completion)
   }
 
-
+  // MARK: -
+  
   @usableFromInline
   internal let box: _AnyTaskConditionBaseBox<Failure>
 
+  // MARK: -
 
   @inlinable
   public init<C: TaskCondition>(_ base: C) { box = _AnyTaskConditionBox(base) }

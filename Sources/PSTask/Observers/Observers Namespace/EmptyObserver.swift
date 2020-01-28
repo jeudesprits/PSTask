@@ -1,6 +1,6 @@
 //
 //  EmptyObserver.swift
-//  PSOperation
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/24/20.
 //

@@ -1,6 +1,6 @@
 //
 //  NoCancelledDependenciesCondition.swift
-//  PSOperation
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/17/20.
 //
@@ -14,11 +14,12 @@ extension Conditions {
     
     public typealias Failure = Error
     
+    // MARK: -
     
-    public func dependency<O: ProducerOperationProtocol>(for operation: O) -> Operation? { nil }
+    public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { nil }
     
-    public func evaluate<O: ProducerOperationProtocol>(for operation: O, completion: @escaping (Result<Void, Failure>) -> Void) {
-      operation.dependencies.allSatisfy { !$0.isCancelled }
+    public func evaluate<T: ProducerTaskProtocol>(for task: T, completion: @escaping (Result<Void, Failure>) -> Void) {
+      task.dependencies.allSatisfy { !$0.isCancelled }
         ? completion(.success(()))
         : completion(.failure(.haveCancelledFailure))
     }

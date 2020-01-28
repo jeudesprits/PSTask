@@ -1,6 +1,6 @@
 //
 //  ConditionsBuilder.swift
-//  PSOperation
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/18/20.
 //
