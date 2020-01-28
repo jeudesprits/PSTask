@@ -1,6 +1,6 @@
 //
-//  PSGroupConsumerOperation.swift
-//  PSOperation
+//  GroupConsumerTask.swift
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/5/20.
 //
@@ -56,11 +56,15 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>: ConsumerPro
     produced: ProducerTask<Output, Failure>
   ) {
     precondition(tasks.contains { $0 === produced })
-    innerQueue = .init(name: "com.PSOperation.\(String(describing: Self.self))-inner", startSuspended: true)
+    innerQueue = .init(
+      name: "com.PSTask.\(String(describing: Self.self))-inner",
+      qos: qos,
+      underlyingQueue: underlyingQueue,
+      startSuspended: true)
     super.init(name: name, qos: qos, priority: priority, producing: producing)
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(startingTask)
-    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     tasks.forEach { innerQueue.addTask($0) }
   }
 }
@@ -71,17 +75,17 @@ extension GroupConsumerProducerTask: TaskQueueDelegate {
   public func taskQueue<T: ProducerTaskProtocol>(_ taskQueue: TaskQueue, willAdd task: T) {
     precondition(
       !finishingTask.isFinished && !finishingTask.isExecuting,
-      "Сannot add new operations to a group after the group has completed."
+      "Сannot add new tasks to a group after the group has completed."
     )
     
-    // Some operation in this group has produced a new operation to execute.
-    // We want to allow that operation to execute before the group completes,
-    // so we'll make the finishing operation dependent on this newly-produced operation.
+    // Some task in this group has produced a new task to execute.
+    // We want to allow that task to execute before the group completes,
+    // so we'll make the finishing task dependent on this newly-produced task.
     if task !== finishingTask { finishingTask.addDependency(task) }
     
-    // All operations should be dependent on the "startingOperation".
-    // This way, we can guarantee that the conditions for other operations
-    // will not evaluate until just before the operation is about to run.
+    // All tasks should be dependent on the `startingTask`.
+    // This way, we can guarantee that the conditions for other tasks
+    // will not evaluate until just before the task is about to run.
     // Otherwise, the conditions could be evaluated at any time, even
     // before the internal operation queue is unsuspended.
     if task !== startingTask { task.addDependency(startingTask) }
