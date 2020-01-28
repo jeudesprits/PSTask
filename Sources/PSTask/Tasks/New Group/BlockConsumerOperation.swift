@@ -1,6 +1,6 @@
 //
-//  BlockConsumerOperation.swift
-//  PSOperation
+//  BlockConsumerTask.swift
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/12/20.
 //
@@ -8,7 +8,7 @@
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-open class BlockConsumerProducerOperation<Input, Output, Failure: Error>: ConsumerProducerTask<Input, Output, Failure> {
+open class BlockConsumerProducerTask<Input, Output, Failure: Error>: ConsumerProducerTask<Input, Output, Failure> {
   
   public typealias Block = (Consumed, @escaping (Produced) -> Void) -> Void
   
@@ -26,10 +26,10 @@ open class BlockConsumerProducerOperation<Input, Output, Failure: Error>: Consum
     name: String? = nil,
     qos: QualityOfService = .default,
     priority: Operation.QueuePriority = .normal,
-    producing producingOperation: ProducingOperation,
+    producing: ProducingTask,
     block: @escaping Block
   ) {
     self.block = block
-    super.init(name: name, qos: qos, priority: priority, producing: producingOperation)
+    super.init(name: name, qos: qos, priority: priority, producing: producing)
   }
 }

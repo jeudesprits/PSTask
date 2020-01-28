@@ -5,15 +5,11 @@
 //  Created by Ruslan Lutfullin on 1/5/20.
 //
 
-import Foundation
-import PSLock
-
 @inline(never)
 @usableFromInline
 internal func _abstract(file: StaticString = #file, line: UInt = #line) -> Never {
   fatalError("Method must be overridden.", file: file, line: line)
 }
-
 
 //@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 //open class PSAbstractOperation: Operation {

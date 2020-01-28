@@ -1,6 +1,6 @@
 //
-//  BlockProducerOperation.swift
-//  PSOperation
+//  BlockProducerTask.swift
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/12/20.
 //
@@ -8,7 +8,7 @@
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-open class BlockProducerOperation<Output, Failure: Error>: ProducerOperation<Output, Failure> {
+open class BlockProducerOperation<Output, Failure: Error>: ProducerTask<Output, Failure> {
   
   public typealias Block = (@escaping (Produced) -> Void) -> Void
   
