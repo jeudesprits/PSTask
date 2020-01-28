@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "PSLock",
+        "repositoryURL": "https://github.com/jeudesprits/PSLock",
+        "state": {
+          "branch": "master",
+          "revision": "1ec54df3a7a15e7a9b84e38c15772d18480f6074",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
