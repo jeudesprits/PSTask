@@ -142,7 +142,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   }
   
   open override func main() {
-    precondition(state == .ready, "This operation must be performed on an operation queue.")
+    precondition(state == .ready, "This task must be performed on an task queue.")
     
     if produced == nil && !isCancelled {
       state = .executing
@@ -155,10 +155,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   // MARK: -
 
-  open func execute() {
-   // _abstract()
-    
-  }
+  open func execute() { _abstract() }
   
   // MARK: -
   
@@ -194,10 +191,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
     // the behavior you're wishing to create.
     #if !DEBUG
     fatalError(
-      """
-      Waiting on operations is an anti-pattern. Remove this ONLY if you're absolutely \
-      sure there is No Other Way™.
-      """
+      "Waiting on tasks is an anti-pattern. Remove this ONLY if you're absolutely sure there is No Other Way™."
     )
     #else
     super.waitUntilFinished()
