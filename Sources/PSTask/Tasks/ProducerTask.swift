@@ -1,6 +1,6 @@
 //
-//  ProducerOperation.swift
-//  PSOperation
+//  ProducerTask.swift
+//  PSTask
 //
 //  Created by Ruslan Lutfullin on 1/4/20.
 //
