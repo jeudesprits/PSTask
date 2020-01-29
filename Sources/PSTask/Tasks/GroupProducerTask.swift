@@ -61,161 +61,6 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
     innerQueue.addTask(startingTask)
   }
   
-  public convenience init<T1: ProducerTaskProtocol>(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    tasks: (T1)
-  ) {
-    self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-    innerQueue.addTask(tasks)
-  }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol>(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    tasks: (T1, T2)
-  ) {
-    self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-    innerQueue.addTask(tasks.0)
-    innerQueue.addTask(tasks.1)
-  }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol>(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    tasks: (T1, T2, T3)
-  ) {
-    self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-    innerQueue.addTask(tasks.0)
-    innerQueue.addTask(tasks.1)
-    innerQueue.addTask(tasks.2)
-  }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol>(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    tasks: (T1, T2, T3, T4)
-  ) {
-    self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-    innerQueue.addTask(tasks.0)
-    innerQueue.addTask(tasks.1)
-    innerQueue.addTask(tasks.2)
-    innerQueue.addTask(tasks.3)
-  }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol>(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    tasks: (T1, T2, T3, T4, T5)
-  ) {
-    self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-    innerQueue.addTask(tasks.0)
-    innerQueue.addTask(tasks.1)
-    innerQueue.addTask(tasks.2)
-    innerQueue.addTask(tasks.3)
-    innerQueue.addTask(tasks.4)
-  }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol>(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    tasks: (T1, T2, T3, T4, T5, T6)
-  ) {
-    self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-    innerQueue.addTask(tasks.0)
-    innerQueue.addTask(tasks.1)
-    innerQueue.addTask(tasks.2)
-    innerQueue.addTask(tasks.3)
-    innerQueue.addTask(tasks.4)
-    innerQueue.addTask(tasks.5)
-  }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol, T7: ProducerTaskProtocol>(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    tasks: (T1, T2, T3, T4, T5, T6, T7)
-  ) {
-    self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-    innerQueue.addTask(tasks.0)
-    innerQueue.addTask(tasks.1)
-    innerQueue.addTask(tasks.2)
-    innerQueue.addTask(tasks.3)
-    innerQueue.addTask(tasks.4)
-    innerQueue.addTask(tasks.5)
-    innerQueue.addTask(tasks.6)
-  }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol, T7: ProducerTaskProtocol, T8: ProducerTaskProtocol>(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    tasks: (T1, T2, T3, T4, T5, T6, T7, T8)
-  ) {
-    self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-    innerQueue.addTask(tasks.0)
-    innerQueue.addTask(tasks.1)
-    innerQueue.addTask(tasks.2)
-    innerQueue.addTask(tasks.3)
-    innerQueue.addTask(tasks.4)
-    innerQueue.addTask(tasks.5)
-    innerQueue.addTask(tasks.6)
-    innerQueue.addTask(tasks.7)
-  }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol, T7: ProducerTaskProtocol, T8: ProducerTaskProtocol, T9: ProducerTaskProtocol>(
-     name: String? = nil,
-     qos: QualityOfService = .default,
-     priority: Operation.QueuePriority = .normal,
-     underlyingQueue: DispatchQueue? = nil,
-     tasks: (T1, T2, T3, T4, T5, T6, T7, T8, T9)
-   ) {
-     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-     innerQueue.addTask(tasks.0)
-     innerQueue.addTask(tasks.1)
-     innerQueue.addTask(tasks.2)
-     innerQueue.addTask(tasks.3)
-     innerQueue.addTask(tasks.4)
-     innerQueue.addTask(tasks.5)
-     innerQueue.addTask(tasks.6)
-     innerQueue.addTask(tasks.7)
-     innerQueue.addTask(tasks.8)
-   }
-  
-  public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol, T7: ProducerTaskProtocol, T8: ProducerTaskProtocol, T9: ProducerTaskProtocol, T10: ProducerTaskProtocol>(
-     name: String? = nil,
-     qos: QualityOfService = .default,
-     priority: Operation.QueuePriority = .normal,
-     underlyingQueue: DispatchQueue? = nil,
-     tasks: (T1, T2, T3, T4, T5, T6, T7, T8, T8, T9, T10)
-   ) {
-     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
-     innerQueue.addTask(tasks.0)
-     innerQueue.addTask(tasks.1)
-     innerQueue.addTask(tasks.2)
-     innerQueue.addTask(tasks.3)
-     innerQueue.addTask(tasks.4)
-     innerQueue.addTask(tasks.5)
-     innerQueue.addTask(tasks.6)
-     innerQueue.addTask(tasks.7)
-     innerQueue.addTask(tasks.8)
-     innerQueue.addTask(tasks.9)
-   }
-  
   // MARK: -
   
   private init(
@@ -236,7 +81,170 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
     innerQueue.delegate = self
     innerQueue.addTask(startingTask)
   }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension GroupProducerTask {
   
+  public convenience init<T1: ProducerTaskProtocol>(
+     name: String? = nil,
+     qos: QualityOfService = .default,
+     priority: Operation.QueuePriority = .normal,
+     underlyingQueue: DispatchQueue? = nil,
+     tasks: (T1)
+   ) {
+     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+     innerQueue.addTask(tasks)
+   }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol>(
+     name: String? = nil,
+     qos: QualityOfService = .default,
+     priority: Operation.QueuePriority = .normal,
+     underlyingQueue: DispatchQueue? = nil,
+     tasks: (T1, T2)
+   ) {
+     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+     innerQueue.addTask(tasks.0)
+     innerQueue.addTask(tasks.1)
+   }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol>(
+     name: String? = nil,
+     qos: QualityOfService = .default,
+     priority: Operation.QueuePriority = .normal,
+     underlyingQueue: DispatchQueue? = nil,
+     tasks: (T1, T2, T3)
+   ) {
+     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+     innerQueue.addTask(tasks.0)
+     innerQueue.addTask(tasks.1)
+     innerQueue.addTask(tasks.2)
+   }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol>(
+     name: String? = nil,
+     qos: QualityOfService = .default,
+     priority: Operation.QueuePriority = .normal,
+     underlyingQueue: DispatchQueue? = nil,
+     tasks: (T1, T2, T3, T4)
+   ) {
+     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+     innerQueue.addTask(tasks.0)
+     innerQueue.addTask(tasks.1)
+     innerQueue.addTask(tasks.2)
+     innerQueue.addTask(tasks.3)
+   }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol>(
+     name: String? = nil,
+     qos: QualityOfService = .default,
+     priority: Operation.QueuePriority = .normal,
+     underlyingQueue: DispatchQueue? = nil,
+     tasks: (T1, T2, T3, T4, T5)
+   ) {
+     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+     innerQueue.addTask(tasks.0)
+     innerQueue.addTask(tasks.1)
+     innerQueue.addTask(tasks.2)
+     innerQueue.addTask(tasks.3)
+     innerQueue.addTask(tasks.4)
+   }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol>(
+     name: String? = nil,
+     qos: QualityOfService = .default,
+     priority: Operation.QueuePriority = .normal,
+     underlyingQueue: DispatchQueue? = nil,
+     tasks: (T1, T2, T3, T4, T5, T6)
+   ) {
+     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+     innerQueue.addTask(tasks.0)
+     innerQueue.addTask(tasks.1)
+     innerQueue.addTask(tasks.2)
+     innerQueue.addTask(tasks.3)
+     innerQueue.addTask(tasks.4)
+     innerQueue.addTask(tasks.5)
+   }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol, T7: ProducerTaskProtocol>(
+     name: String? = nil,
+     qos: QualityOfService = .default,
+     priority: Operation.QueuePriority = .normal,
+     underlyingQueue: DispatchQueue? = nil,
+     tasks: (T1, T2, T3, T4, T5, T6, T7)
+   ) {
+     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+     innerQueue.addTask(tasks.0)
+     innerQueue.addTask(tasks.1)
+     innerQueue.addTask(tasks.2)
+     innerQueue.addTask(tasks.3)
+     innerQueue.addTask(tasks.4)
+     innerQueue.addTask(tasks.5)
+     innerQueue.addTask(tasks.6)
+   }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol, T7: ProducerTaskProtocol, T8: ProducerTaskProtocol>(
+     name: String? = nil,
+     qos: QualityOfService = .default,
+     priority: Operation.QueuePriority = .normal,
+     underlyingQueue: DispatchQueue? = nil,
+     tasks: (T1, T2, T3, T4, T5, T6, T7, T8)
+   ) {
+     self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+     innerQueue.addTask(tasks.0)
+     innerQueue.addTask(tasks.1)
+     innerQueue.addTask(tasks.2)
+     innerQueue.addTask(tasks.3)
+     innerQueue.addTask(tasks.4)
+     innerQueue.addTask(tasks.5)
+     innerQueue.addTask(tasks.6)
+     innerQueue.addTask(tasks.7)
+   }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol, T7: ProducerTaskProtocol, T8: ProducerTaskProtocol, T9: ProducerTaskProtocol>(
+      name: String? = nil,
+      qos: QualityOfService = .default,
+      priority: Operation.QueuePriority = .normal,
+      underlyingQueue: DispatchQueue? = nil,
+      tasks: (T1, T2, T3, T4, T5, T6, T7, T8, T9)
+    ) {
+      self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+      innerQueue.addTask(tasks.0)
+      innerQueue.addTask(tasks.1)
+      innerQueue.addTask(tasks.2)
+      innerQueue.addTask(tasks.3)
+      innerQueue.addTask(tasks.4)
+      innerQueue.addTask(tasks.5)
+      innerQueue.addTask(tasks.6)
+      innerQueue.addTask(tasks.7)
+      innerQueue.addTask(tasks.8)
+    }
+   
+   public convenience init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol, T4: ProducerTaskProtocol, T5: ProducerTaskProtocol, T6: ProducerTaskProtocol, T7: ProducerTaskProtocol, T8: ProducerTaskProtocol, T9: ProducerTaskProtocol, T10: ProducerTaskProtocol>(
+      name: String? = nil,
+      qos: QualityOfService = .default,
+      priority: Operation.QueuePriority = .normal,
+      underlyingQueue: DispatchQueue? = nil,
+      tasks: (T1, T2, T3, T4, T5, T6, T7, T8, T8, T9, T10)
+    ) {
+      self.init(name: name, qos: qos, priority: priority, underlyingQueue: underlyingQueue)
+      innerQueue.addTask(tasks.0)
+      innerQueue.addTask(tasks.1)
+      innerQueue.addTask(tasks.2)
+      innerQueue.addTask(tasks.3)
+      innerQueue.addTask(tasks.4)
+      innerQueue.addTask(tasks.5)
+      innerQueue.addTask(tasks.6)
+      innerQueue.addTask(tasks.7)
+      innerQueue.addTask(tasks.8)
+      innerQueue.addTask(tasks.9)
+    }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension GroupProducerTask {
+
   public convenience init<T1: ProducerTaskProtocol>(
     name: String? = nil,
     qos: QualityOfService = .default,

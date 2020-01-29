@@ -62,6 +62,32 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>: ConsumerPro
     innerQueue.addTask(startingTask)
   }
   
+  // MARK: -
+  
+  private init(
+    name: String? = nil,
+    qos: QualityOfService = .default,
+    priority: Operation.QueuePriority = .normal,
+    underlyingQueue: DispatchQueue? = nil,
+    producing: ProducingTask,
+    produced: ProducerTask<Output, Failure>
+  ) {
+    innerQueue = .init(
+      name: "com.PSTask.\(String(describing: Self.self))-inner",
+      qos: qos,
+      underlyingQueue: underlyingQueue,
+      startSuspended: true
+    )
+    super.init(name: name, qos: qos, priority: priority, producing: producing)
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    innerQueue.delegate = self
+    innerQueue.addTask(startingTask)
+  }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension GroupConsumerProducerTask {
+  
   public convenience init<T1: ProducerTaskProtocol>(
     name: String? = nil,
     qos: QualityOfService = .default,
@@ -226,28 +252,10 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>: ConsumerPro
     innerQueue.addTask(tasks.8)
     innerQueue.addTask(tasks.9)
   }
-  
-  // MARK: -
-  
-  private init(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    priority: Operation.QueuePriority = .normal,
-    underlyingQueue: DispatchQueue? = nil,
-    producing: ProducingTask,
-    produced: ProducerTask<Output, Failure>
-  ) {
-    innerQueue = .init(
-      name: "com.PSTask.\(String(describing: Self.self))-inner",
-      qos: qos,
-      underlyingQueue: underlyingQueue,
-      startSuspended: true
-    )
-    super.init(name: name, qos: qos, priority: priority, producing: producing)
-    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
-    innerQueue.delegate = self
-    innerQueue.addTask(startingTask)
-  }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension GroupConsumerProducerTask {
   
   public convenience init<T1: ProducerTaskProtocol>(
     name: String? = nil,
