@@ -45,9 +45,6 @@ public protocol ProducerTaskProtocol: Operation {
   @discardableResult
   func addDependency<T: ProducerTaskProtocol>(_ task: T) -> Self
   
-  @discardableResult
-  func addDependencies<T: ProducerTaskProtocol>(_ tasks: [T]) -> Self
-
   // MARK: -
   
   func willEnqueue()

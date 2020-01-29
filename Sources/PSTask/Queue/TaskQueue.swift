@@ -102,16 +102,10 @@ open class TaskQueue: OperationQueue {
     _addTask(task)
   }
   
-  open func addTasks<T: ProducerTaskProtocol>(_ tasks: [T]) { tasks.forEach { addTask($0) } }
-  
   open func addTaskAfter<T: ProducerTaskProtocol>(_ task: T, deadline: DispatchTime) {
     DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: deadline) { self.addTask(task) }
   }
-  
-  open func addTasksAfter<T: ProducerTaskProtocol>(_ tasks: [T], deadline: DispatchTime) {
-    tasks.forEach { addTaskAfter($0, deadline: deadline)}
-  }
-  
+
   open func addBlockTask(_ block: @escaping () -> Void) { super.addOperation(block) }
   
   open func addBarrierBlockTask(_ block: @escaping () -> Void) { super.addBarrierBlock(block) }

@@ -210,12 +210,6 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
     return self
   }
   
-  @discardableResult
-  open func addDependencies<T: ProducerTaskProtocol>(_ tasks: [T]) -> Self {
-    tasks.forEach { addDependency($0) }
-    return self
-  }
-  
   // MARK: -
   
   @available(*, unavailable)
