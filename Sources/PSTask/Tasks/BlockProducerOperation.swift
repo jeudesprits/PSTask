@@ -8,7 +8,7 @@
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-open class BlockProducerOperation<Output, Failure: Error>: ProducerTask<Output, Failure> {
+open class BlockProducerTask<Output, Failure: Error>: ProducerTask<Output, Failure> {
   
   public typealias Block = (@escaping (Produced) -> Void) -> Void
   
@@ -16,7 +16,9 @@ open class BlockProducerOperation<Output, Failure: Error>: ProducerTask<Output, 
   
   // MARK: -
   
-  open override func execute() { block { (produced) in self.finish(with: produced) } }
+  open override func execute() {
+    block { (produced) in self.finish(with: produced) }
+  }
   
   // MARK: -
   

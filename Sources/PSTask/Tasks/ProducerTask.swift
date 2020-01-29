@@ -223,7 +223,10 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   private var producedCompletionBlock: ((Produced) -> Void)?
   
-  open func recieve(completion: @escaping (Produced) -> Void) { producedCompletionBlock = completion }
+  open func recieve(completion: @escaping (Produced) -> Void) -> Self {
+    producedCompletionBlock = completion
+    return self
+  }
   
   // MARK: -
   
@@ -279,4 +282,16 @@ extension ProducerTask._State: Comparable {
   internal static func < (lhs: Self, rhs: Self) -> Bool { lhs.rawValue < rhs.rawValue }
   
   internal static func == (lhs: Self, rhs: Self) -> Bool { lhs.rawValue == rhs.rawValue }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask {
+  
+//  public func map<T>(_ transform: @escaping (Output) -> T) -> Tasks.Map<Output, T, Failure> {
+//    //.init(name: "Map", qos: qualityOfService, priority: queuePriority, producing: self, transform: transform)
+//  }
+//  
+  public func tryMap<T>(_ transform: @escaping (Output) throws -> T) -> Tasks.TryMap<Output, T, Failure> {
+    .init(name: "TryMap", qos: qualityOfService, priority: queuePriority, producing: self, transform: transform)
+  }
 }

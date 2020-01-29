@@ -68,5 +68,8 @@ public protocol ProducerTaskProtocol: Operation {
   
   // MARK: -
   
-  func recieve(completion: @escaping (Produced) -> Void)
+  func recieve(completion: @escaping (Produced) -> Void) -> Self
 }
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public enum Tasks {}

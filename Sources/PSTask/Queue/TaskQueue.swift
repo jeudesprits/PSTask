@@ -94,6 +94,13 @@ open class TaskQueue: OperationQueue {
     
     super.addOperation(task)
   }
+    
+  open func addTask<T: ConsumerProducerTaskProtocol>(_ task: T) {
+    func _addTask<T: ProducerTaskProtocol>(_ task: T) { addTask(task) }
+    
+    _addTask(task.producing)
+    _addTask(task)
+  }
   
   open func addTasks<T: ProducerTaskProtocol>(_ tasks: [T]) { tasks.forEach { addTask($0) } }
   
