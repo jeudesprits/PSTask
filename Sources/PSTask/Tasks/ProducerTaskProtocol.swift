@@ -68,6 +68,7 @@ public protocol ProducerTaskProtocol: Operation {
   
   // MARK: -
   
+  @discardableResult
   func recieve(completion: @escaping (Produced) -> Void) -> Self
 }
 

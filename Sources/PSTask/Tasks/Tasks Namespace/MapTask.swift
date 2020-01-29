@@ -12,30 +12,30 @@ extension Tasks {
   
   public final class Map<Input, Failure1: Error, Output, Failure2: Error>: GroupProducerTask<Output, Failure2> {
     
-    private let transform: (Input) -> Output
-    
-    // MARK: -
-    
-    public init(
-      from: ProducerTask<Input, Failure1>,
-      transform: (Input) -> Output
-    ) {
-      
-      let transformTask =
-        BlockConsumerProducerTask<Input, Output, Failure1>(
-          name: "Map.Transform",
-          qos: from.qualityOfService,
-          priority: from.queuePriority,
-          producing: from
-        ) { (consumed, finishing) in finishing(consumed.map(transform)) }
-      
-      super.init(
-        name: "Map",
-        qos: from.qualityOfService,
-        priority: from.queuePriority,
-        underlyingQueue: nil,
-        tasks: [transformTask]
-      )
-    }
+//    private let transform: (Input) -> Output
+//    
+//    // MARK: -
+//    
+//    public init(
+//      from: ProducerTask<Input, Failure1>,
+//      transform: (Input) -> Output
+//    ) {
+//      
+//      let transformTask =
+//        BlockConsumerProducerTask<Input, Output, Failure1>(
+//          name: "Map.Transform",
+//          qos: from.qualityOfService,
+//          priority: from.queuePriority,
+//          producing: from
+//        ) { (consumed, finishing) in finishing(consumed.map(transform)) }
+//      
+//      super.init(
+//        name: "Map",
+//        qos: from.qualityOfService,
+//        priority: from.queuePriority,
+//        underlyingQueue: nil,
+//        tasks: [transformTask]
+//      )
+//    }
   }
 }

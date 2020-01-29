@@ -10,24 +10,16 @@ final class PSTaskTests: XCTestCase {
     
     let expec = XCTestExpectation()
     
-    let task = BlockProducerOperation<Int, String> { (finishing) in
-      finishing(.success(10))
-    }.tryMap { (value) -> Int in
-      if value == 21 {
-        return 12
-      } else {
-        throw "Fuck... this is not '21'"
-      }
-    }.map {
-      $0 + $0
-    }.recieve {
-      print($0)
-      expec.fulfill()
+    let t1 = BlockProducerTask<Int, Never>.init { (finishing) in
+      finishing(.success(21))
+    }
+    let t2 = BlockConsumerProducerTask<Int, Int, Never>.init(producing: t1) { (consumed, finishing) in
+      finishing(.success(21))
     }
     
-    taskQueue.addTask(task)
+    let g = GroupProducerTask<Int, Never>(tasks: (t1, t2))
     
-    wait(for: [expec], timeout: 3)
+   // wait(for: [expec], timeout: 3)
   }
   
   static var allTests = [

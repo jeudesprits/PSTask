@@ -223,6 +223,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   private var producedCompletionBlock: ((Produced) -> Void)?
   
+  @discardableResult
   open func recieve(completion: @escaping (Produced) -> Void) -> Self {
     producedCompletionBlock = completion
     return self
@@ -290,7 +291,7 @@ extension ProducerTask {
 //  public func map<T>(_ transform: @escaping (Output) -> T) -> Tasks.Map<Output, T, Failure> {
 //    //.init(name: "Map", qos: qualityOfService, priority: queuePriority, producing: self, transform: transform)
 //  }
-//  
+//
   public func tryMap<T>(_ transform: @escaping (Output) throws -> T) -> Tasks.TryMap<Output, T, Failure> {
     .init(name: "TryMap", qos: qualityOfService, priority: queuePriority, producing: self, transform: transform)
   }

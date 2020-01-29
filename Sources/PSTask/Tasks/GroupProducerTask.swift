@@ -42,8 +42,6 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
   
   open func addTask<T: ProducerTaskProtocol>(_ task: T) { innerQueue.addTask(task) }
   
-  open func addTasks<T: ProducerTaskProtocol>(_ tasks: [T]) { tasks.forEach { addTask($0) } }
-  
   // MARK: -
   
   private init(
