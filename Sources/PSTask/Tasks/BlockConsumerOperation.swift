@@ -16,9 +16,7 @@ open class BlockConsumerProducerTask<Input, Output, Failure: Error>: ConsumerPro
   
   // MARK: -
   
-  open override func execute(with consumed: Consumed) {
-    block(consumed) { (produced) in self.finish(with: produced) }
-  }
+  open override func execute(with consumed: Consumed) { block(consumed) { (produced) in self.finish(with: produced) } }
   
   // MARK: -
   
