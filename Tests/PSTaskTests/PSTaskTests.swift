@@ -6,20 +6,24 @@ extension String: Error {}
 final class PSTaskTests: XCTestCase {
   
   func testMapTask() {
-    let taskQueue: TaskQueue = .init(name: "Test", qos: .userInitiated)
+    let taskQueue: TaskQueue = .init(name: "Test.TaskQueue", qos: .userInitiated)
     
     let expec = XCTestExpectation()
     
-    let t1 = BlockProducerTask<Int, Never>.init { (finishing) in
-      finishing(.success(21))
-    }
-    let t2 = BlockConsumerProducerTask<Int, Int, Never>.init(producing: t1) { (consumed, finishing) in
-      finishing(.success(21))
+    let t = BlockProducerTask<Int, String> { (finishing) in
+      finishing(.failure(.providedFailure("...")))
+    }.map {
+      $0 + $0
+    }.map {
+      $0 * $0
+    }.recieve {
+      print($0) // 4
+      expec.fulfill()
     }
     
-    let g = GroupProducerTask<Int, Never>(tasks: (t1, t2))
+    taskQueue.addTask(t)
     
-   // wait(for: [expec], timeout: 3)
+    wait(for: [expec], timeout: 10)
   }
   
   static var allTests = [

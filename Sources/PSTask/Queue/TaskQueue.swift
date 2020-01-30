@@ -94,13 +94,6 @@ open class TaskQueue: OperationQueue {
     
     super.addOperation(task)
   }
-    
-  open func addTask<T: ConsumerProducerTaskProtocol>(_ task: T) {
-    func _addTask<T: ProducerTaskProtocol>(_ task: T) { addTask(task) }
-    
-    _addTask(task.producing)
-    _addTask(task)
-  }
   
   open func addTaskAfter<T: ProducerTaskProtocol>(_ task: T, deadline: DispatchTime) {
     DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: deadline) { self.addTask(task) }

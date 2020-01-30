@@ -11,7 +11,7 @@ import PSLock
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum ProducerTaskError: Error { case conditionsFailure, executionFailure }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *) // TODO: - Добавить `removeDependecies`
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol {
   
   public typealias Output = Output
@@ -203,10 +203,20 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   @available(*, unavailable)
   open override func addDependency(_ operation: Operation) {}
   
+  @available(*, unavailable)
+  open override func removeDependency(_ operation: Operation) {}
+  
   @discardableResult
   open func addDependency<T: ProducerTaskProtocol>(_ task: T) -> Self {
     precondition(state < .executing, "Dependencies cannot be modified after execution has begun.")
     super.addDependency(task)
+    return self
+  }
+  
+  @discardableResult
+  open func removeDependency<T: ProducerTaskProtocol>(_ task: T) -> Self {
+    precondition(state < .executing, "Dependencies cannot be modified after execution has begun.")
+    super.removeDependency(task)
     return self
   }
   
@@ -282,11 +292,7 @@ extension ProducerTask._State: Comparable {
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension ProducerTask {
   
-//  public func map<T>(_ transform: @escaping (Output) -> T) -> Tasks.Map<Output, T, Failure> {
-//    //.init(name: "Map", qos: qualityOfService, priority: queuePriority, producing: self, transform: transform)
-//  }
-//
-  public func tryMap<T>(_ transform: @escaping (Output) throws -> T) -> Tasks.TryMap<Output, T, Failure> {
-    .init(name: "TryMap", qos: qualityOfService, priority: queuePriority, producing: self, transform: transform)
+  public func map<T>(_ transform: @escaping (Output) -> T) -> Tasks.Map<Output, T, Failure> {
+    .init(from: self, transform: transform)
   }
 }
