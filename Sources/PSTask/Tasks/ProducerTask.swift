@@ -305,4 +305,12 @@ extension ProducerTask {
   ) -> Tasks.FlatMap<Output, T, Failure> where T.Output == Output, T.Failure == Failure {
     .init(from: self, transform: transform)
   }
+  
+  public func replaceNil<T>(with output: T) -> Tasks.Map<Output, T, Failure> where Output == T? {
+    .init(from: self, transform: { $0 ?? output })
+  }
+  
+  public func mapError<NewFailure>(_ transform: @escaping (Failure) -> NewFailure) -> Tasks.MapError<Output, Failure, NewFailure> {
+    .init(from: self, transform: transform)
+  }
 }

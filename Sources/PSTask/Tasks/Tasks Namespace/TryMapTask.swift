@@ -40,7 +40,6 @@ extension Tasks {
           }
       }.addDependency(from)
       
-      
       super.init(tasks: (from, transform), produced: transform)
     }
   }

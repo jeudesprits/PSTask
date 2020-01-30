@@ -12,19 +12,10 @@ final class PSTaskTests: XCTestCase {
     let expec = XCTestExpectation()
 
     let t =
-      BlockProducerTask<Int, String> { (_, finish) in
-        finish(.success(1))
-      }.map {
-        $0 + $0
-      }.map {
-        $0 * $0
-      }.tryMap { (val) -> String in
-        guard val == 4 else { throw ZXC.oops }
-        return "\(val)"
-      }.flatMap { (val) -> BlockProducerTask<String, Error> in
-        BlockProducerTask { (_, finish) in
-          finish(.success(val + val))
-        }
+      BlockProducerTask<Int?, String> { (_, finish) in
+        finish(.success(nil))
+      }.replaceNil(with: 21).mapError { _ in
+        ZXC.oops
       }.recieve {
         print($0)
         expec.fulfill()
