@@ -295,4 +295,14 @@ extension ProducerTask {
   public func map<T>(_ transform: @escaping (Output) -> T) -> Tasks.Map<Output, T, Failure> {
     .init(from: self, transform: transform)
   }
+  
+  public func tryMap<T>(_ transform: @escaping (Output) throws -> T) -> Tasks.TryMap<Output, T, Failure> {
+    .init(from: self, transform: transform)
+  }
+  
+  public func flatMap<T: ProducerTaskProtocol>(
+    _ transform: @escaping (Output) -> T
+  ) -> Tasks.FlatMap<Output, T, Failure> where T.Output == Output, T.Failure == Failure {
+    .init(from: self, transform: transform)
+  }
 }

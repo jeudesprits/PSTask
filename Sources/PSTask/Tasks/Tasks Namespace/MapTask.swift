@@ -11,9 +11,7 @@ import Foundation
 extension Tasks {
   
   public final class Map<Input, Output, Failure: Error>: GroupProducerTask<Output, Failure> {
-    
-    // MARK: -
-    
+  
     public init(
       from: ProducerTask<Input, Failure>,
       transform: @escaping (Input) -> Output
@@ -24,7 +22,14 @@ extension Tasks {
           qos: from.qualityOfService,
           priority: from.queuePriority,
           producing: from
-        ) { (consumed, finishing) in finishing(consumed.map(transform)) }
+        ) { (task, consumed, finish) in
+          guard !task.isCancelled else {
+            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            return
+          }
+          
+          finish(consumed.map(transform))
+        }
       
       super.init(tasks: (from, transform), produced: transform)
     }

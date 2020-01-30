@@ -8,15 +8,17 @@
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-open class BlockConsumerProducerTask<Input, Output, Failure: Error>: ConsumerProducerTask<Input, Output, Failure> {
+public final class BlockConsumerProducerTask<Input, Output, Failure: Error>: ConsumerProducerTask<Input, Output, Failure> {
   
-  public typealias Block = (Consumed, @escaping (Produced) -> Void) -> Void
+  public typealias Block = (BlockConsumerProducerTask, Consumed, @escaping (Produced) -> Void) -> Void
   
   private let block: Block
   
   // MARK: -
   
-  open override func execute(with consumed: Consumed) { block(consumed) { (produced) in self.finish(with: produced) } }
+  public override func execute(with consumed: Consumed) {
+    block(self, consumed) { (produced) in self.finish(with: produced) }
+  }
   
   // MARK: -
   
