@@ -8,6 +8,16 @@
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias ConsumerTask<Input, Failure: Error> = ConsumerProducerTask<Input, Void, Failure>
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias NonFailConsumerTask<Input> = ConsumerTask<Input, Never>
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum ConsumerProducerTaskError: Error { case producingFailure }
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -49,13 +59,3 @@ open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Out
     addDependency(producing)
   }
 }
-
-// MARK: -
-
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public typealias ConsumerTask<Input, Failure: Error> = ConsumerProducerTask<Input, Void, Failure>
-
-// MARK: -
-
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public typealias NonFailConsumerTask<Input> = ConsumerProducerTask<Input, Void, Never>
