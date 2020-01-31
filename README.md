@@ -16,4 +16,4 @@
 
 # PSTask
 
-...
+`PSTask` is an improved version of `NSOperation`. 
