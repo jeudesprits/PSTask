@@ -27,22 +27,22 @@ Next, I will try to explain the basic work with the library.
 `TaskQueue` is a queue to which all tasks are added. A queue can be created with the following initializer:
 
 ```swift
- init(
-    name: String? = nil,
-    qos: QualityOfService = .default,
-    maxConcurrentTasks: Int = OperationQueue.defaultMaxConcurrentOperationCount,
-    underlyingQueue: DispatchQueue? = nil,
-    startSuspended: Bool = false
- )
+init(
+  name: String? = nil,
+  qos: QualityOfService = .default,
+  maxConcurrentTasks: Int = OperationQueue.defaultMaxConcurrentOperationCount,
+  underlyingQueue: DispatchQueue? = nil,
+  startSuspended: Bool = false
+)
 ```
 
 
 In the code, it might look something like this:
 
 ```swift
-    let taskQueue =
-      TaskQueue(
-        name: "com.example.network-background",
-        qos: .background,
-      )
+let taskQueue = 
+  TaskQueue(
+    name: "com.example.network-background",
+    qos: .background,
+  )
 ```
