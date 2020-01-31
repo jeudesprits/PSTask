@@ -23,3 +23,15 @@ First you need to remember one thing, throughout the library, instead of the con
 Next, I will try to explain the basic work with the library.
 
 ## TaskQueue
+
+`TaskQueue` is a queue to which all tasks are added. A queue can be created as follows:
+```swift
+    let taskQueue =
+      TaskQueue(
+        name: "...",
+        qos: .background,
+        maxConcurrentTasks: 1,
+        underlyingQueue: nil,
+        startSuspended: true
+      )
+```
