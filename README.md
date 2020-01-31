@@ -436,4 +436,7 @@ taskQueue.addTask(t1)
 taskQueue.addTask(t2)
 taskQueue.addTask(t)
 ```
-```
+
+# Sooner
+
+This is only a small part of the possibilities. Soon I will add documentation. There is much more that has not been said. Tasks can not only generate a certain result, but can also receive it from another task. This way you can easily organize task chains. *Operator* functions do exactly the same thing. I have not yet talked about grouping several tasks into one task. Thank you for reaching the end. 😃
