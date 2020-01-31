@@ -62,3 +62,15 @@ It is possible to add a task postponed:
 ```swift
 taskQueue.addTaskAfter(t1, deadline: .now() + 3) // Will be added to queue in 3 seconds.
 ```
+
+It is possible to add a **synchronous** block-task to the queue without creating a separate task:
+
+```swift
+taskQueue.addBlockTask { /* Some synchronous work... */ }
+```
+
+Moreover, you can add a **synchronous** block-task, that method executes the block when the `TaskQueue` has finished all enqueued tasks and prevents any subsequent tasks to be executed until the barrier has been completed. This acts similarly to the `dispatch_barrier_async` function.
+
+```swift
+taskQueue.addBarrierBlock { /* Some synchronous work... */ }
+```
