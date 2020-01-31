@@ -86,7 +86,7 @@ class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
 
 The main idea is that any task, no matter what work it performs, synchronous or asynchronous, should return a result. If successful, we return some value; in case of an error, we return the error itself. And this idea applies to the perfect of any task in this library. 
 
-This class is abstract and you should not use it directly. This class contains most of the work you don't need to do. In order to create your first task, it is enough to inherit this abstract class and override just one method:
+`ProducerTask` is abstract and you should not use it directly. This class contains most of the work you don't need to do. In order to create your first task, it is enough to inherit and override just one method:
 
 ```swift
 enum MyFirstProducerTaskError: Error {
@@ -124,5 +124,10 @@ final class MyFirstProducerTask: ProducerTask<Data?, MyFirstProducerTaskError> {
     }.resume()
   }
 }
+
+let t = MyFirstProducerTask()
+taskQueue.addTask(t)
 ```
+
+
 
