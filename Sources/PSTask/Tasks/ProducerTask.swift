@@ -48,7 +48,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   // MARK: -
   
-  private let stateLock = PSUnfairLock()
+  private let stateLock = UnfairLock()
   private var _state = _State.initialized
   private var state: _State {
     get { stateLock.sync { _state } }

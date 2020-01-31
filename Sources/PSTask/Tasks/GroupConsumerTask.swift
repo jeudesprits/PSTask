@@ -15,7 +15,7 @@ open class GroupConsumerTask<Input, Failure: Error>: ConsumerTask<Input, Failure
   
   // MARK: -
   
-  private let lock = PSUnfairLock()
+  private let lock = UnfairLock()
   
   // MARK: -
   
@@ -320,7 +320,7 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>: ConsumerPro
   
   // MARK: -
   
-  private let lock = PSUnfairLock()
+  private let lock = UnfairLock()
   
   // MARK: -
   

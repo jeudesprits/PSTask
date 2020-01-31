@@ -7,10 +7,10 @@ enum ZXC: Error { case oops }
 final class PSTaskTests: XCTestCase {
   
   func testMapTask() {
-    let taskQueue: TaskQueue = .init(name: "Test.TaskQueue")
+    let taskQueue = TaskQueue()
     
     let expec = XCTestExpectation()
-
+    
     let t =
       BlockProducerTask<Int?, String> { (_, finish) in
         finish(.success(nil))
@@ -19,8 +19,8 @@ final class PSTaskTests: XCTestCase {
       }.recieve {
         print($0)
         expec.fulfill()
-      }
-
+    }
+    
     taskQueue.addTask(t)
     
     wait(for: [expec], timeout: 10)

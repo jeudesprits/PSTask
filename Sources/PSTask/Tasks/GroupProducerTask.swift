@@ -15,7 +15,7 @@ open class GroupTask<Failure: Error>: Task<Failure> {
   
   // MARK: -
   
-  private let lock = PSUnfairLock()
+  private let lock = UnfairLock()
   
   // MARK: -
   
@@ -328,7 +328,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
   
   // MARK: -
   
-  private let lock = PSUnfairLock()
+  private let lock = UnfairLock()
   
   // MARK: -
   

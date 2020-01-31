@@ -10,7 +10,7 @@ import PSLock
 
 internal struct _ConditionEvaluator {
   
-  private static let lock = PSUnfairLock()
+  private static let lock = UnfairLock()
   
   // MARK: -
   
