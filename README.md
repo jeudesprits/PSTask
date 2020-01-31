@@ -221,7 +221,7 @@ final class MyNonFailTask: NonFailTask {
 
 ```
 
-### ProducerTask addition methods
+### ProducerTask finished(with:) method
 
 In addition to the main `execute()` method, you can override the `finished(with:)` method, which is called, as the name implies, after the task finishes, in which the result of the task is transferred.
 
@@ -246,6 +246,8 @@ final class MyTask: Task<SomeError> {
   }
 }
 ```
+
+### ProducerTask recieve(completion:) method
 
 But this method is more suitable for people who create their tasks for reuse and in the completion of work they want to perform some kind of internal work.
 
@@ -277,4 +279,42 @@ let t2 =
     }
 ```
 
+### ProducerTask produce(new:) method
 
+It may seem strange to you, but the task itself may give rise to another task, which will automatically be added to the same queue in which the task itself is located.
+
+For example, you have an task that checks the location. At some point, it may happen that you do not have access to this location and you would like to start another task at that moment, inside this one, which will request permission to use the location.
+
+```swift
+final class GetLocationTask: ProducerTask<CLLocation, SomeError> {
+  
+  private let accuracy: CLLocationAccuracy
+  private var manager: CLLocationManager?
+  
+  init(accuracy: CLLocationAccuracy) {
+    self.accuracy = accuracy
+    super.init()
+  }
+  
+  override func execute() {
+    DispatchQueue.main.async {
+      let manager = CLLocationManager()
+      manager.desiredAccuracy = self.accuracy
+      manager.delegate = self
+      manager.startUpdatingLocation()
+      self.manager = manager
+    }
+  }
+  
+  func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    guard let location = locations.last, location.horizontalAccuracy <= accuracy else { return }
+    finish(with: .success(location))
+  }
+  
+  func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    let getPermTask = GetPermTask(...)
+    produce(new: getPermTask)
+    finish(with: .failure(...))
+  }
+}
+```
