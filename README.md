@@ -173,7 +173,7 @@ final class UsersTask: MyTask<Int, UsersError> {
   }
 }
 ```
-## ProducerTask typealiases
+### ProducerTask typealiases
 
 In addition to the main `ProducerTask` class, there are two simple classes that are actually just aliases:
 
@@ -221,6 +221,30 @@ final class MyNonFailTask: NonFailTask {
 
 ```
 
+### ProducerTask addition methods
 
+In addition to the main `execute()` method, you can override the `finished(with:)` method, which is called, as the name implies, after the task finishes, in which the result of the task is transferred.
+
+```swift
+final class MyTask: Task<SomeError> {
+  
+  override func execute() {
+    // ...
+  }
+  
+  override func finished(with produced: Produced) {
+    // Work is done with `produced`...
+    // Do some work:
+    switch produced {
+    case .success:
+       // ...
+    case let .failure(error):
+      // ...
+    }
+    
+    // Or any other work ...
+  }
+}
+```
 
 
