@@ -247,4 +247,34 @@ final class MyTask: Task<SomeError> {
 }
 ```
 
+But this method is more suitable for people who create their tasks for reuse and in the completion of work they want to perform some kind of internal work.
+
+Generally speaking, for any operation for ordinary purposes, to get the result of the task you should use the following method:
+
+```swift
+let t1 =
+  MyProducerTask<Int, SomeError>()
+    .recieve(completion: { (produced) in
+      switch produced {
+      case let .success(value):
+      // ...
+      case let .failure(error):
+        // ...
+      }
+    })
+
+// or just
+
+let t2 =
+  MyProducerTask<Int, SomeError>()
+    .recieve {
+      switch $0 {
+      case let .success(value):
+      // ...
+      case let .failure(error):
+        // ...
+      }
+    }
+```
+
 
