@@ -419,7 +419,7 @@ let t =
      .mapError {
       // Convert `SomeError` to `NewError`...
     }.addDependency(t2) 
-     .recieve { // Just get the result of this intermediate `mapError` task
+     .recieve { // Just get the result of this intermediate `mapError` task.
        print($0)
     }.flatMap {
       // Convert to New Task...
