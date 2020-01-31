@@ -74,3 +74,5 @@ Moreover, you can add a **synchronous** block-task, that method executes the blo
 ```swift
 taskQueue.addBarrierBlock { /* Some synchronous work... */ }
 ```
+See the documentation for a complete list of methods and properties.
+
