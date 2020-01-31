@@ -372,7 +372,7 @@ Similarly, you can remove a task from your dependencies using `removeDependency(
 
 ### ProducerTask operators
 
-`ProducerTask` can provide much more features than what was presented above. These features are "operator" functions, similar to those you might see in **RX** or recently introduced by Apple - **Combine** framework.
+`ProducerTask` can provide much more features than what was presented above. These features are *operator* functions, similar to those you might see in **RX** or recently introduced by Apple - **Combine** framework.
 
 Better to see once:
 
@@ -381,9 +381,9 @@ let t =
   MyProducerTask<Data?, SomeError>(qos: .userInitiated, priority: .high)
      .replaceNil(with: ...) // Convert `Data?` to `Data`...
      .map {
-       // Convert Ouput `Data` to `UIImage`...
+       // Convert `Data` to `UIImage`...
     }.mapError {
-      // Convert Failure to NewFailure...
+      // Convert `SomeError` to `NewError`...
     }.flatMap {
       // Convert to New Task...
     }.recieve {
@@ -396,3 +396,44 @@ let t =
     }
 ```
 
+Each *operator* function is another task that will be performed after completing the task above it. Each *operator* function allows you to somehow transform result in a chain, while doing this asynchronously, because, as I already wrote, they are all ordinary tasks.
+
+The number of such functions will increase with each new version and I want to transfer almost all the operator functions that are present in **RX** and/or **Combine** framework.
+
+*Operator* functions can not only transform the result of the previous task, they can generate new task within themselves. One such *operator* function is `flatMap`.
+
+Since each *operator* function generates a task, just like in the usual case, we can add additional dependencies to it or, say, hang up a completion and get the result of an intermediate *operator* function:
+
+```swift
+```swift
+let t1 = ...
+let t2 = ...
+
+let t =
+  MyProducerTask<Data?, SomeError>(qos: .userInitiated, priority: .high)
+     .replaceNil(with: ...) // Convert `Data?` to `Data`...
+     .map {
+       // Convert `Data` to `UIImage`...
+    }.addDependency(t1) // `map` will start working as soon as the task before it 
+                        // and the task added as a dependency is completed.
+     .mapError {
+      // Convert `SomeError` to `NewError`...
+    }.addDependency(t2) 
+     .recieve { // Just get the result of this intermediate `mapError` task
+       print($0)
+    }.flatMap {
+      // Convert to New Task...
+    }.recieve {
+      switch $0 {
+      case let .success(value):
+      // ...
+      case let .failure(error):
+        // ...
+      }
+    }
+
+taskQueue.addTask(t1)
+taskQueue.addTask(t2)
+taskQueue.addTask(t)
+```
+```
