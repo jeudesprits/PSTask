@@ -174,5 +174,16 @@ final class UsersTask: MyTask<Int, UsersError> {
 }
 ```
 
+In addition to the main `ProducerTask` class, there are two simple classes that are actually just aliases:
+
+```swift
+typealias Task<Failure: Error> = ProducerTask<Void, Failure>
+
+typealias NonFailTask = ProducerTask<Void, Never>
+```
+
+`Task` is a normal task, with the only difference being that it returns nothing. `NonFailTask` is the same as `Task`, but it can never return an error.
+
+
 
 
