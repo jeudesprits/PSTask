@@ -370,4 +370,29 @@ let t =
 
 Similarly, you can remove a task from your dependencies using `removeDependency(_:)` method.
 
+### ProducerTask operators
+
+`ProducerTask` can provide much more features than what was presented above. These features are "operator" functions, similar to those you might see in **RX** or recently introduced by Apple - **Combine** framework.
+
+Better to see once:
+
+```swift
+let t =
+  MyProducerTask<Data?, SomeError>(qos: .userInitiated, priority: .high)
+     .replaceNil(with: ...) // Convert `Data?` to `Data`...
+     .map {
+       // Convert Ouput `Data` to `UIImage`...
+    }.mapError {
+      // Convert Failure to NewFailure...
+    }.flatMap {
+      // Convert to New Task...
+    }.recieve {
+      switch $0 {
+      case let .success(value):
+      // ...
+      case let .failure(error):
+        // ...
+      }
+    }
+```
 
