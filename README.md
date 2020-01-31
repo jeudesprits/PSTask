@@ -90,6 +90,7 @@ The main idea is that any task, no matter what work it performs, synchronous or 
 
 ```swift
 enum MyFirstProducerTaskError: Error {
+
   case urlError(Error)
   case invalidServerResponse(URLResponse)
   case invalidServerStatusCode(Int)
@@ -129,9 +130,19 @@ let t = MyFirstProducerTask()
 taskQueue.addTask(t)
 ```
 
-We created our first task. Inherit from `ProducerTask` and indicates that the return value will be Date? and possible errors, indicating a specific type that implements the `Error` protocol. 
+We created our first task. Inherit from `ProducerTask` and indicates that the return value will be `Date?` and possible errors, indicating a specific type that implements the `Error` protocol. 
 
-It is important to understand that within the task, any work can be performed. No matter what it is, synchronous or asynchronous. All work must be placed in the `execute` method. To make it clear to the task that you have completed the work, call the `finish(with:)` method. The argument of this method is `Result<Data?, ProducerTaskProtocolError <MyFirstProducerTaskError>>`. You probably ask, why not just `Result<Data?, MyFirstProducerTaskError>`?
+It is important to understand that within the task, any work can be performed. No matter what it is, synchronous or asynchronous. All work must be placed in the `execute()` method. To make it clear to the task that you have completed the work, call the `finish(with:)` method. The argument of this method is `Result<Data?, ProducerTaskProtocolError <MyFirstProducerTaskError>>`. You probably ask, why not just `Result<Data?, MyFirstProducerTaskError>`? 
+
+Because the task itself, or rather its internal implementation, may contain its own variants of errors, which are manifested in certain cases. For example, the `ProducerTask` abstract class defines its two errors, which should be, regardless of what errors the user will also transmit to this. To solve this problem, on top of all the errors is this enum:
+
+```swift
+enum ProducerTaskProtocolError<Failure: Error>: Error {
+
+  case internalFailure(Error)
+  case providedFailure(Failure)
+}
+```
 
 
 
