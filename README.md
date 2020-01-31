@@ -16,7 +16,7 @@
 
 # PSTask
 
-`PSTask` is an improved fully generic version of `NSOperation`. `PSTask` provides great opportunities for working with `NSOperation`'s, dependency management, building chains, grouping them, and much more ...
+`PSTask` is an improved, fully generic version of `NSOperation`. `PSTask` provides great opportunities for working with `NSOperation`'s, dependency management, building chains, grouping them, and much more ...
 
 First you need to remember one thing, throughout the library, instead of the concept of an operation, the concepts of a task are used. 
 
@@ -345,4 +345,29 @@ let t =
       }
     }
 ```
+
+### ProducerTask dependencies
+
+Like `NSOperation`, any task can have dependencies. Dependencies mean that the current task will not start its work exactly until all task on which it depends, are either completed or canceled. In order to add a task as a dependency, just use the `addDependency(_:)` method. Like that:
+
+```swift
+let t1 = ...
+let t2 = ...
+
+let t =
+  MyProducerTask<Int, SomeError>(qos: .userInitiated, priority: .high)
+    .addDependency(t1)
+    .addDependency(t2)
+    .recieve {
+      switch $0 {
+      case let .success(value):
+      // ...
+      case let .failure(error):
+        // ...
+      }
+    }
+```
+
+Similarly, you can remove a task from your dependencies using `removeDependency(_:)` method.
+
 
