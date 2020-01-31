@@ -83,3 +83,46 @@ Everything is built on top of this abstract class:
 ``` swift
 class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol 
 ```
+
+The main idea is that any task, no matter what work it performs, synchronous or asynchronous, should return a result. If successful, we return some value; in case of an error, we return the error itself. And this idea applies to the perfect of any task in this library. 
+
+This class is abstract and you should not use it directly. This class contains most of the work you don't need to do. In order to create your first task, it is enough to inherit this abstract class and override just one method:
+
+```swift
+enum MyFirstProducerTaskError: Error {
+  case urlError(Error)
+  case invalidServerResponse(URLResponse)
+  case invalidServerStatusCode(Int)
+}
+
+final class MyFirstProducerTask: ProducerTask<Data?, MyFirstProducerTaskError> {
+  
+  override func execute() {
+    let url = URL(string: "https://www.example.com/")!
+    
+    URLSession.shared.dataTask(with: url) { data, response, error in
+      if let error = error {
+        self.finish(with: .failure(.providedFailure(.urlError(error))))
+        return
+      }
+      
+      guard let httpResponse = response as? HTTPURLResponse else {
+        self.finish(with: .failure(.providedFailure(.invalidServerResponse(response!))))
+        return
+      }
+      
+      guard (200...299).contains(httpResponse.statusCode) else {
+        self.finish(with: .failure(.providedFailure(.invalidServerStatusCode(httpResponse.statusCode))))
+        return
+      }
+      
+      if let mimeType = httpResponse.mimeType,
+         mimeType == "application/json"
+      {
+        self.finish(with: .success(data))
+      }
+    }.resume()
+  }
+}
+```
+
