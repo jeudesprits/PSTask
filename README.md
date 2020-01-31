@@ -46,3 +46,13 @@ let taskQueue =
     qos: .background,
   )
 ```
+
+Tasks are added to the queue in the same way as for `NSOperationQueue`:
+
+```swift
+let t1 = ...
+let t2 = ...
+
+taskQueue.addTask(t1)
+taskQueue.addTask(t2)
+```
