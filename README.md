@@ -129,5 +129,9 @@ let t = MyFirstProducerTask()
 taskQueue.addTask(t)
 ```
 
+We created our first task. Inherit from `ProducerTask` and indicates that the return value will be Date? and possible errors, indicating a specific type that implements the `Error` protocol. 
+
+It is important to understand that within the task, any work can be performed. No matter what it is, synchronous or asynchronous. All work must be placed in the `execute` method. To make it clear to the task that you have completed the work, call the `finish(with:)` method. The argument of this method is `Result<Data?, ProducerTaskProtocolError <MyFirstProducerTaskError>>`. You probably ask, why not just `Result<Data?, MyFirstProducerTaskError>`?
+
 
 
