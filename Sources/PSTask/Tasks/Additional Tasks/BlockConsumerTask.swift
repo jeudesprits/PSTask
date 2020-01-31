@@ -8,6 +8,16 @@
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias BlockConsumerTask<Input, Failure: Error> = BlockConsumerProducerTask<Input, Void, Failure>
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias NonFailBlockConsumerTask<Input> = BlockConsumerTask<Input, Never>
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public final class BlockConsumerProducerTask<Input, Output, Failure: Error>: ConsumerProducerTask<Input, Output, Failure> {
   
   public typealias Block = (BlockConsumerProducerTask, Consumed, @escaping (Produced) -> Void) -> Void

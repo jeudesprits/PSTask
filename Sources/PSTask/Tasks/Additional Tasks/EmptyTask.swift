@@ -8,7 +8,7 @@
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public final class EmptyTask: ProducerTask<Void, Never> {
+public final class EmptyTask: NonFailTask {
   
-  public override func execute() { finish(with: .success(())) }
+  public override func execute() { finish(with: .success) }
 }
