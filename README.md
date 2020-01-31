@@ -60,5 +60,5 @@ taskQueue.addTask(t2)
 It is possible to add a task postponed:
 
 ```swift
-taskQueue.addTaskAfter(t1, deadline: .now + 2) // Will be added to queue in 2 seconds.
+taskQueue.addTaskAfter(t1, deadline: .now() + 3) // Will be added to queue in 3 seconds.
 ```
