@@ -9,7 +9,7 @@ import Foundation
 import PSLock
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-open class GroupTask<Failure: Error>: ProducerTask<Void, Failure> {
+open class GroupTask<Failure: Error>: Task<Failure> {
   
   private let innerQueue: TaskQueue
   
@@ -316,6 +316,7 @@ extension GroupTask: TaskQueueDelegate {
 
 // MARK: -
 
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias NonFailGroupTask = GroupTask<Never>
 
 // MARK: -
