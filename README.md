@@ -318,3 +318,31 @@ final class GetLocationTask: ProducerTask<CLLocation, SomeError>, CLLocationMana
   }
 }
 ```
+
+### ProducerTask init
+
+`ProducerTask` abstract class is provided with the following initializer:
+
+```swift
+init(
+  name: String? = nil,
+  qos: QualityOfService = .default,
+  priority: Operation.QueuePriority = .normal
+)
+```
+
+We intentionally did not use any arguments in the examples above, but you need to know that they are and their use is a sign of good manners. Moreover, you should always provide these arguments in your tasks initializers, unless there is a specific reason not to.
+
+```swift
+let t =
+  MyProducerTask<Int, SomeError>(qos: .userInitiated, priority: .high)
+    .recieve {
+      switch $0 {
+      case let .success(value):
+      // ...
+      case let .failure(error):
+        // ...
+      }
+    }
+```
+
