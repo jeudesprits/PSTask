@@ -8,6 +8,9 @@
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias Consumer<Input, Failure: Error> = ConsumerProducerTask<Input, Void, Failure>
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum ConsumerProducerTaskError: Error { case producingFailure }
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)

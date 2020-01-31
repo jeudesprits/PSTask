@@ -9,6 +9,15 @@ import Foundation
 import PSLock
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias Task<Failure: Error> = ProducerTask<Void, Failure>
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Result where Success == Void {
+  
+  public var success: Self { .success(()) }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum ProducerTaskError: Error { case conditionsFailure, executionFailure }
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
