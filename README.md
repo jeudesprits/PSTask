@@ -148,6 +148,7 @@ For example, you can create your abstract task. Your task, in addition to the wo
 
 ```swift
 enum MyTaskError: Error {
+
   case oops
 }
 
@@ -160,6 +161,7 @@ class MyTask<Output, Failure: Error>: ProducerTask<Output, Failure> {
 }
 
 enum UsersError: Error {
+
   case someFailure
 }
 
