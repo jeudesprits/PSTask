@@ -405,7 +405,6 @@ The number of such functions will increase with each new version and I want to t
 Since each *operator* function generates a task, just like in the usual case, we can add additional dependencies to it or, say, hang up a completion and get the result of an intermediate *operator* function:
 
 ```swift
-```swift
 let t1 = ...
 let t2 = ...
 
