@@ -144,5 +144,33 @@ enum ProducerTaskProtocolError<Failure: Error>: Error {
 }
 ```
 
+For example, you can create your abstract task. Your task, in addition to the work that the user transferred, carries out some of its own, as a result of which an error may also occur:
+
+```swift
+enum MyTaskError: Error {
+  case oops
+}
+
+class MyTask<Output, Failure: Error>: ProducerTask<Output, Failure> {
+  
+  private func someInternalMethod() {
+    // error...
+    finish(with: .failure(.internalFailure(ErrorMyTaskError.oops)))
+  }
+}
+
+enum UsersError: Error {
+  case someFailure
+}
+
+final class UsersTask: MyTask<Int, UsersError> {
+  
+  override func execute() {
+    // error...
+    finish(with: .failure(.providedFailure(.someFailure)))
+  }
+}
+```
+
 
 
