@@ -286,7 +286,7 @@ It may seem strange to you, but the task itself may give rise to another task, w
 For example, you have an task that checks the location. At some point, it may happen that you do not have access to this location and you would like to start another task at that moment, inside this one, which will request permission to use the location.
 
 ```swift
-final class GetLocationTask: ProducerTask<CLLocation, SomeError> {
+final class GetLocationTask: ProducerTask<CLLocation, SomeError>, CLLocationManagerDelegate {
   
   private let accuracy: CLLocationAccuracy
   private var manager: CLLocationManager?
