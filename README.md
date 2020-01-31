@@ -76,3 +76,10 @@ taskQueue.addBarrierBlock { /* Some synchronous work... */ }
 ```
 See the documentation for a complete list of methods and properties.
 
+## Task
+
+Everything is built on top of this abstract class:
+
+``` swift
+class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol 
+```
