@@ -76,7 +76,7 @@ taskQueue.addBarrierBlock { /* Some synchronous work... */ }
 ```
 See the documentation for a complete list of methods and properties.
 
-## Task
+## ProducerTask
 
 Everything is built on top of this abstract class:
 
@@ -173,6 +173,7 @@ final class UsersTask: MyTask<Int, UsersError> {
   }
 }
 ```
+## ProducerTask typealiases
 
 In addition to the main `ProducerTask` class, there are two simple classes that are actually just aliases:
 
@@ -183,6 +184,42 @@ typealias NonFailTask = ProducerTask<Void, Never>
 ```
 
 `Task` is a normal task, with the only difference being that it returns nothing. `NonFailTask` is the same as `Task`, but it can never return an error.
+
+Example for `Task`:
+
+```swift
+enum MyTaskError: Error {
+  
+  case .oops
+}
+
+final class MyTask: Task<MyTaskError> {
+  
+  override func execute() {
+    guard ... else {
+      finish(with: .failure(.providedFailure(.oops)))
+      return
+    }
+    
+    // When work done...
+    finish(with: .success)
+  }
+}
+```
+
+Example for `NonFailTask`:
+
+```swift
+final class MyNonFailTask: NonFailTask {
+  
+  override func execute() {
+    
+    // No errors, just success at the end of your work...
+    finish(with: .success)
+  }
+}
+
+```
 
 
 
