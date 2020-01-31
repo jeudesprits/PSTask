@@ -16,4 +16,6 @@
 
 # PSTask
 
-`PSTask` is an improved version of `NSOperation`. 
+`PSTask` is an improved version of `NSOperation`. `PSTask` provides great opportunities for working with `NSOperation`s, dependency management, building chains of `NSOperation`s, grouping them, and much more ...
+
+
