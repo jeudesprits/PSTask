@@ -10,14 +10,21 @@ import Foundation
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Tasks {
 
-  public final class TryMap<Input, Output, Failure: Error>: GroupProducerTask<Output, Error> {
+  public final class TryMap<Output, NewOutput, Failure: Error>: GroupProducerTask<NewOutput, Error> {
     
     public init(
-      from: ProducerTask<Input, Failure>,
-      transform: @escaping (Input) throws -> Output
+      from: ProducerTask<Output, Failure>,
+      transform: @escaping (Output) throws -> NewOutput,
+      underlyingQueue: DispatchQueue? = nil
     ) {
+      let name = String(describing: Self.self)
+      
       let transform =
-        BlockProducerTask<Output, Error> { (task, finish) in
+        BlockProducerTask<NewOutput, Error>(
+          name: "\(name).Transform",
+          qos: from.qualityOfService,
+          priority: from.queuePriority
+        ) { (task, finish) in
           guard !task.isCancelled else {
             finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
             return
@@ -40,7 +47,14 @@ extension Tasks {
           }
       }.addDependency(from)
       
-      super.init(tasks: (from, transform), produced: transform)
+      super.init(
+        name: name,
+        qos: from.qualityOfService,
+        priority: from.queuePriority,
+        underlyingQueue: underlyingQueue,
+        tasks: (from, transform),
+        produced: transform
+      )
     }
   }
 }

@@ -14,8 +14,11 @@ extension Tasks {
     
     public init(
       from: ProducerTask<Output, Failure>,
-      transform: @escaping (Failure) -> NewFailure
+      transform: @escaping (Failure) -> NewFailure,
+      underlyingQueue: DispatchQueue? = nil
     ) {
+      let name = String(describing: Self.self)
+      
       let transform =
         BlockProducerTask<Output, NewFailure>.init { (task, finish) in
           guard !task.isCancelled else {
@@ -37,7 +40,14 @@ extension Tasks {
           }
       }.addDependency(from)
       
-      super.init(tasks: (from, transform), produced: transform)
+      super.init(
+        name: name,
+        qos: from.qualityOfService,
+        priority: from.queuePriority,
+        underlyingQueue: underlyingQueue,
+        tasks: (from, transform),
+        produced: transform
+      )
     }
   }
 }

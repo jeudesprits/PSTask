@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias ConsumerTask<Input, Failure: Error> = ConsumerProducerTask<Input, Void, Failure>

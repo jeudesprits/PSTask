@@ -130,6 +130,7 @@ open class TaskQueue: OperationQueue {
   @available(*, unavailable)
   public override init() {}
   
+  @inlinable
   public init(
     name: String? = nil,
     qos: QualityOfService = .default,

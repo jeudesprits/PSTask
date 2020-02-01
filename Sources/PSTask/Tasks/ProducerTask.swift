@@ -27,6 +27,7 @@ public typealias NonFailTask = ProducerTask<Void, Never>
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum ProducerTaskError: Error { case conditionsFailure, executionFailure }
 
+// TODO: - Добавить поддержку `Identifiable`
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol {
   
@@ -243,7 +244,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   private var producedCompletionBlock: ((Produced) -> Void)?
   
-  @discardableResult
+  @discardableResult // TODO: - Добавлять новый `completion` поверх текущего.
   open func recieve(completion: @escaping (Produced) -> Void) -> Self {
     producedCompletionBlock = completion
     return self
@@ -308,25 +309,43 @@ extension ProducerTask._State: Comparable {
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension ProducerTask {
   
-  public func map<T>(_ transform: @escaping (Output) -> T) -> Tasks.Map<Output, T, Failure> {
-    .init(from: self, transform: transform)
+  @inlinable
+  public func map<NewOutput>(
+    underlyingQueue: DispatchQueue? = nil,
+    transform: @escaping (Output) -> NewOutput
+  ) -> Tasks.Map<Output, NewOutput, Failure> {
+    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
   }
   
-  public func tryMap<T>(_ transform: @escaping (Output) throws -> T) -> Tasks.TryMap<Output, T, Failure> {
-    .init(from: self, transform: transform)
+  @inlinable
+  public func tryMap<NewOutput>(
+    underlyingQueue: DispatchQueue? = nil,
+    transform: @escaping (Output) throws -> NewOutput
+  ) -> Tasks.TryMap<Output, NewOutput, Failure> {
+    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
   }
   
+  @inlinable
   public func flatMap<T: ProducerTaskProtocol>(
-    _ transform: @escaping (Output) -> T
-  ) -> Tasks.FlatMap<Output, T, Failure> where T.Output == Output, T.Failure == Failure {
-    .init(from: self, transform: transform)
+    underlyingQueue: DispatchQueue? = nil,
+    transform: @escaping (Output) -> T
+  ) -> Tasks.FlatMap<Output, Failure, T> where T.Output == Output, T.Failure == Failure {
+    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
   }
   
-  public func replaceNil<T>(with output: T) -> Tasks.Map<Output, T, Failure> where Output == T? {
-    .init(from: self, transform: { $0 ?? output })
+  @inlinable
+  public func mapError<NewFailure>(
+    underlyingQueue: DispatchQueue? = nil,
+    transform: @escaping (Failure) -> NewFailure
+  ) -> Tasks.MapError<Output, Failure, NewFailure> {
+    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
   }
   
-  public func mapError<NewFailure>(_ transform: @escaping (Failure) -> NewFailure) -> Tasks.MapError<Output, Failure, NewFailure> {
-    .init(from: self, transform: transform)
+  @inlinable
+  public func replaceNil<NonNilOutput>(
+    underlyingQueue: DispatchQueue? = nil,
+    with output: @escaping () -> NonNilOutput
+  ) -> Tasks.Map<Output, NonNilOutput, Failure> where Output == NonNilOutput? {
+    .init(from: self, transform: { _ in output() }, underlyingQueue: underlyingQueue)
   }
 }

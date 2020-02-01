@@ -609,7 +609,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks)
   }
@@ -629,7 +629,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
@@ -650,7 +650,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
@@ -672,7 +672,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
@@ -695,7 +695,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
@@ -719,7 +719,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
@@ -744,7 +744,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
@@ -770,7 +770,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
@@ -797,7 +797,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
@@ -825,7 +825,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
       startSuspended: true
     )
     super.init(name: name, qos: qos, priority: priority)
-    _ = produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
+    produced.recieve { [unowned self] (produced) in self.finish(with: produced) }
     innerQueue.delegate = self
     innerQueue.addTask(tasks.0)
     innerQueue.addTask(tasks.1)
