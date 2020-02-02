@@ -388,4 +388,11 @@ extension ProducerTask {
   ) -> Tasks.ReplaceError<Output, Failure> {
     .init(from: self, transform: output, underlyingQueue: underlyingQueue)
   }
+  
+  @inlinable
+  public func ignoreOutptu(
+    underlyingQueue: DispatchQueue? = nil
+  ) -> Tasks.IgnoreOutput<Output, Failure> {
+    .init(from: self, underlyingQueue: underlyingQueue)
+  }
 }
