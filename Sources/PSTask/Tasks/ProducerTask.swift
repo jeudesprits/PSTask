@@ -380,4 +380,12 @@ extension ProducerTask {
   ) -> Tasks.TryCompactMap<Output, NewOutput, Failure> {
     .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
   }
+  
+  @inlinable
+  public func replaceError(
+    underlyingQueue: DispatchQueue? = nil,
+    with output: @escaping (Error) -> Output
+  ) -> Tasks.ReplaceError<Output, Failure> {
+    .init(from: self, transform: output, underlyingQueue: underlyingQueue)
+  }
 }
