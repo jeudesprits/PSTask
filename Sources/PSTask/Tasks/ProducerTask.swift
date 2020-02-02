@@ -356,7 +356,7 @@ extension ProducerTask where Failure == Never {
   @inlinable
   public func setFailureType<NewFailure: Error>(
     underlyingQueue: DispatchQueue? = nil,
-    to failureType: NewFailure
+    to failureType: NewFailure.Type
   ) -> Tasks.SetFailureType<Output, NewFailure> {
     .init(from: self, underlyingQueue: underlyingQueue)
   }
