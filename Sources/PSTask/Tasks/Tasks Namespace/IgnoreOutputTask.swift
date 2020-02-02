@@ -34,13 +34,7 @@ extension Tasks {
             return
           }
           
-          if case .success = consumed {
-            finish(.success)
-          } else if case let .failure(.internalFailure(error)) = consumed {
-            finish(.failure(.internalFailure(error)))
-          } else if case let .failure(.providedFailure(error)) = consumed {
-            finish(.failure(.providedFailure(error)))
-          }
+          finish(consumed.flatMap { _ in .success })
         }.addDependency(from)
       
       super.init(
