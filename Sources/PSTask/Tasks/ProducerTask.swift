@@ -396,3 +396,24 @@ extension ProducerTask {
     .init(from: self, underlyingQueue: underlyingQueue)
   }
 }
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask {
+
+  @inlinable
+  public func zip<T: ProducerTaskProtocol>(
+    _ t: T
+  ) -> Tasks.Zip<ProducerTask, T> where Output == T.Output, Failure == T.Failure {
+    .init(tasks: (self, t), underlyingQueue: nil)
+  }
+  
+  @inlinable
+  public func zip<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol>(
+    _ t1: T1,
+    _ t2: T2
+  ) -> Tasks.Zip3<ProducerTask, T1, T2>
+    where Output == T1.Output, Failure == T1.Failure,
+          T1.Output == T2.Output, T1.Failure == T2.Failure {
+    .init(tasks: (self, t1, t2), underlyingQueue: nil)
+  }
+}
