@@ -12,7 +12,7 @@ extension Tasks {
 
   public final class Zip<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol>:
     GroupProducerTask<(T1.Output, T2.Output), T1.Failure>
-    where T1.Output == T2.Output, T1.Failure == T2.Failure {
+    where T1.Failure == T2.Failure {
     
     public init(
       tasks: (T1, T2),
@@ -70,9 +70,9 @@ extension Tasks {
   
   public final class Zip3<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol>:
     GroupProducerTask<(T1.Output, T2.Output, T3.Output), T1.Failure>
-    where T1.Output == T2.Output, T1.Failure == T2.Failure,
-          T2.Output == T3.Output, T2.Failure == T3.Failure {
-    
+    where T1.Failure == T2.Failure,
+          T2.Failure == T3.Failure {
+  
     public init(
       tasks: (T1, T2, T3),
       underlyingQueue: DispatchQueue? = nil
@@ -104,16 +104,16 @@ extension Tasks {
           }
           
           guard let consumed1 = tasks.0.produced,
-                let consumed2 = tasks.1.produced,
-                let consumed3 = tasks.2.produced else
+            let consumed2 = tasks.1.produced,
+            let consumed3 = tasks.2.produced else
           {
             finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
           if case let .success(value1) = consumed1,
-             case let .success(value2) = consumed2,
-             case let .success(value3) = consumed3
+            case let .success(value2) = consumed2,
+            case let .success(value3) = consumed3
           {
             finish(.success((value1, value2, value3)))
           } else if case let .failure(error) = consumed1 {
@@ -135,8 +135,8 @@ extension Tasks {
         tasks: (tasks.0, tasks.1, tasks.2, zip),
         produced: zip
       )
-    }
   }
+}
   
   // MARK: -
   
@@ -145,9 +145,9 @@ extension Tasks {
                           T3: ProducerTaskProtocol,
                           T4: ProducerTaskProtocol>:
     GroupProducerTask<(T1.Output, T2.Output, T3.Output, T4.Output), T1.Failure>
-    where T1.Output == T2.Output, T1.Failure == T2.Failure,
-          T2.Output == T3.Output, T2.Failure == T3.Failure,
-          T3.Output == T4.Output, T3.Failure == T4.Failure {
+    where T1.Failure == T2.Failure,
+          T2.Failure == T3.Failure,
+          T3.Failure == T4.Failure {
     
     public init(
       tasks: (T1, T2, T3, T4),
@@ -229,10 +229,10 @@ extension Tasks {
                           T4: ProducerTaskProtocol,
                           T5: ProducerTaskProtocol>:
     GroupProducerTask<(T1.Output, T2.Output, T3.Output, T4.Output, T5.Output), T1.Failure>
-    where T1.Output == T2.Output, T1.Failure == T2.Failure,
-          T2.Output == T3.Output, T2.Failure == T3.Failure,
-          T3.Output == T4.Output, T3.Failure == T4.Failure,
-          T4.Output == T5.Output, T4.Failure == T5.Failure {
+    where T1.Failure == T2.Failure,
+          T2.Failure == T3.Failure,
+          T3.Failure == T4.Failure,
+          T4.Failure == T5.Failure {
     
     public init(
       tasks: (T1, T2, T3, T4, T5),
@@ -322,11 +322,11 @@ extension Tasks {
                           T5: ProducerTaskProtocol,
                           T6: ProducerTaskProtocol>:
     GroupProducerTask<(T1.Output, T2.Output, T3.Output, T4.Output, T5.Output, T6.Output), T1.Failure>
-    where T1.Output == T2.Output, T1.Failure == T2.Failure,
-          T2.Output == T3.Output, T2.Failure == T3.Failure,
-          T3.Output == T4.Output, T3.Failure == T4.Failure,
-          T4.Output == T5.Output, T4.Failure == T5.Failure,
-          T5.Output == T6.Output, T5.Failure == T6.Failure {
+    where T1.Failure == T2.Failure,
+          T2.Failure == T3.Failure,
+          T3.Failure == T4.Failure,
+          T4.Failure == T5.Failure,
+          T5.Failure == T6.Failure {
     
     public init(
       tasks: (T1, T2, T3, T4, T5, T6),
@@ -365,22 +365,22 @@ extension Tasks {
           }
           
           guard let consumed1 = tasks.0.produced,
-                let consumed2 = tasks.1.produced,
-                let consumed3 = tasks.2.produced,
-                let consumed4 = tasks.3.produced,
-                let consumed5 = tasks.4.produced,
-                let consumed6 = tasks.5.produced else
+            let consumed2 = tasks.1.produced,
+            let consumed3 = tasks.2.produced,
+            let consumed4 = tasks.3.produced,
+            let consumed5 = tasks.4.produced,
+            let consumed6 = tasks.5.produced else
           {
             finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
           if case let .success(value1) = consumed1,
-             case let .success(value2) = consumed2,
-             case let .success(value3) = consumed3,
-             case let .success(value4) = consumed4,
-             case let .success(value5) = consumed5,
-             case let .success(value6) = consumed6
+            case let .success(value2) = consumed2,
+            case let .success(value3) = consumed3,
+            case let .success(value4) = consumed4,
+            case let .success(value5) = consumed5,
+            case let .success(value6) = consumed6
           {
             finish(.success((value1, value2, value3, value4, value5, value6)))
           } else if case let .failure(error) = consumed1 {

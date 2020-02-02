@@ -403,17 +403,70 @@ extension ProducerTask {
   @inlinable
   public func zip<T: ProducerTaskProtocol>(
     _ t: T
-  ) -> Tasks.Zip<ProducerTask, T> where Output == T.Output, Failure == T.Failure {
+  ) -> Tasks.Zip<ProducerTask, T>
+    where Failure == T.Failure {
     .init(tasks: (self, t), underlyingQueue: nil)
   }
   
   @inlinable
-  public func zip<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol>(
+  public func zip<T1: ProducerTaskProtocol,
+                  T2: ProducerTaskProtocol>(
     _ t1: T1,
     _ t2: T2
   ) -> Tasks.Zip3<ProducerTask, T1, T2>
-    where Output == T1.Output, Failure == T1.Failure,
-          T1.Output == T2.Output, T1.Failure == T2.Failure {
-    .init(tasks: (self, t1, t2), underlyingQueue: nil)
+    where Failure == T1.Failure,
+          T1.Failure == T2.Failure {
+      .init(tasks: (self, t1, t2), underlyingQueue: nil)
   }
+  
+  @inlinable
+  public func zip<T1: ProducerTaskProtocol,
+                  T2: ProducerTaskProtocol,
+                  T3: ProducerTaskProtocol>(
+    _ t1: T1,
+    _ t2: T2,
+    _ t3: T3
+  ) -> Tasks.Zip4<ProducerTask, T1, T2, T3>
+    where Failure == T1.Failure,
+          T1.Failure == T2.Failure,
+          T2.Failure == T3.Failure {
+      .init(tasks: (self, t1, t2, t3), underlyingQueue: nil)
+  }
+  
+  @inlinable
+  public func zip<T1: ProducerTaskProtocol,
+                  T2: ProducerTaskProtocol,
+                  T3: ProducerTaskProtocol,
+                  T4: ProducerTaskProtocol>(
+    _ t1: T1,
+    _ t2: T2,
+    _ t3: T3,
+    _ t4: T4
+  ) -> Tasks.Zip5<ProducerTask, T1, T2, T3, T4>
+    where Failure == T1.Failure,
+          T1.Failure == T2.Failure,
+          T2.Failure == T3.Failure,
+          T3.Failure == T4.Failure {
+      .init(tasks: (self, t1, t2, t3, t4), underlyingQueue: nil)
+  }
+  
+   @inlinable
+   public func zip<T1: ProducerTaskProtocol,
+                   T2: ProducerTaskProtocol,
+                   T3: ProducerTaskProtocol,
+                   T4: ProducerTaskProtocol,
+                   T5: ProducerTaskProtocol>(
+     _ t1: T1,
+     _ t2: T2,
+     _ t3: T3,
+     _ t4: T4,
+     _ t5: T5
+   ) -> Tasks.Zip6<ProducerTask, T1, T2, T3, T4, T5>
+     where Failure == T1.Failure,
+           T1.Failure == T2.Failure,
+           T2.Failure == T3.Failure,
+           T3.Failure == T4.Failure,
+           T4.Failure == T5.Failure {
+       .init(tasks: (self, t1, t2, t3, t4, t5), underlyingQueue: nil)
+   }
 }
