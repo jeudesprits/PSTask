@@ -19,7 +19,11 @@ extension Tasks {
       let name = String(describing: Self.self)
       
       let transform =
-        BlockProducerTask<Output, NewFailure> { (task, finish) in
+        BlockProducerTask<Output, NewFailure>(
+          name: "\(name).Transform",
+          qos: from.qualityOfService,
+          priority: from.queuePriority
+        ) { (task, finish) in
           guard let consumed = from.produced else {
             finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
             return

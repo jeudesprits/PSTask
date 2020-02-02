@@ -20,7 +20,11 @@ extension Tasks {
       let name = String(describing: Self.self)
       
       let transform =
-        BlockProducerTask<Output, NewFailure> { (task, finish) in
+        BlockProducerTask<Output, NewFailure>(
+          name: "\(name).Transform",
+          qos: from.qualityOfService,
+          priority: from.queuePriority
+        ) { (task, finish) in
           guard !task.isCancelled else {
             finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
             return
@@ -38,7 +42,7 @@ extension Tasks {
           } else if case let .success(value) = consumed {
             finish(.success(value))
           }
-      }.addDependency(from)
+        }.addDependency(from)
       
       super.init(
         name: name,
