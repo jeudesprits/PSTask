@@ -334,7 +334,7 @@ extension ProducerTask {
   }
   
   @inlinable
-  public func mapError<NewFailure>(
+  public func mapError<NewFailure: Error>(
     underlyingQueue: DispatchQueue? = nil,
     transform: @escaping (Failure) -> NewFailure
   ) -> Tasks.MapError<Output, Failure, NewFailure> {
@@ -347,5 +347,17 @@ extension ProducerTask {
     with output: @escaping () -> NonNilOutput
   ) -> Tasks.Map<Output, NonNilOutput, Failure> where Output == NonNilOutput? {
     .init(from: self, transform: { _ in output() }, underlyingQueue: underlyingQueue)
+  }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask where Failure == Never {
+  
+  @inlinable
+  public func setFailureType<NewFailure: Error>(
+    underlyingQueue: DispatchQueue? = nil,
+    to failureType: NewFailure
+  ) -> Tasks.SetFailureType<Output, NewFailure> {
+    .init(from: self, underlyingQueue: underlyingQueue)
   }
 }

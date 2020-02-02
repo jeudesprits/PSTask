@@ -1,8 +1,8 @@
 //
-//  MapErrorTask.swift
+//  SetFailureTypeTask.swift
 //  PSTask
 //
-//  Created by Ruslan Lutfullin on 1/31/20.
+//  Created by Ruslan Lutfullin on 2/2/20.
 //
 
 import Foundation
@@ -10,35 +10,27 @@ import Foundation
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Tasks {
   
-  public final class MapError<Output, Failure: Error, NewFailure: Error>: GroupProducerTask<Output, NewFailure> {
+  public final class SetFailureType<Output, NewFailure: Error>: GroupProducerTask<Output, NewFailure> {
     
     public init(
-      from: ProducerTask<Output, Failure>,
-      transform: @escaping (Failure) -> NewFailure,
+      from: ProducerTask<Output, Never>,
       underlyingQueue: DispatchQueue? = nil
     ) {
       let name = String(describing: Self.self)
       
       let transform =
         BlockProducerTask<Output, NewFailure> { (task, finish) in
-          guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
-            return
-          }
-          
           guard let consumed = from.produced else {
             finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
-          if case let .failure(.providedFailure(error)) = consumed {
-            finish(.failure(.providedFailure(transform(error))))
+          if case let .success(value) = consumed {
+            finish(.success(value))
           } else if case let .failure(.internalFailure(error)) = consumed {
             finish(.failure(.internalFailure(error)))
-          } else if case let .success(value) = consumed {
-            finish(.success(value))
           }
-      }.addDependency(from)
+        }.addDependency(from)
       
       super.init(
         name: name,
