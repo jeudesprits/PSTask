@@ -361,3 +361,23 @@ extension ProducerTask where Failure == Never {
     .init(from: self, underlyingQueue: underlyingQueue)
   }
 }
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask {
+  
+  @inlinable
+  public func compactMap<NewOutput>(
+    underlyingQueue: DispatchQueue? = nil,
+    transform: @escaping (Output) -> NewOutput?
+  ) -> Tasks.CompactMap<Output, NewOutput, Failure> {
+    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
+  }
+  
+  @inlinable
+  public func tryCompactMap<NewOutput>(
+    underlyingQueue: DispatchQueue? = nil,
+    transform: @escaping (Output) throws -> NewOutput?
+  ) -> Tasks.TryCompactMap<Output, NewOutput, Failure> {
+    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
+  }
+}
