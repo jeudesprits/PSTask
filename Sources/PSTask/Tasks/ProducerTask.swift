@@ -27,7 +27,7 @@ public typealias NonFailTask = ProducerTask<Void, Never>
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum ProducerTaskError: Error { case conditionsFailure, executionFailure }
 
-// TODO: - Добавить поддержку `Identifiable`
+// TODO: - Добавить поддержку `Identifiable`.
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol {
   
@@ -469,4 +469,16 @@ extension ProducerTask {
            T4.Failure == T5.Failure {
        .init(tasks: (self, t1, t2, t3, t4, t5), underlyingQueue: nil)
    }
+}
+
+extension ProducerTask {
+  
+  @inlinable
+  public func assertNoFailure(
+    _ prefix: String = "",
+    file: StaticString = #file,
+    line: UInt = #line
+  ) -> Tasks.AssertNoFailure<Output, Failure> {
+    .init(prefix, file: file, line: line, from: self)
+  }
 }
