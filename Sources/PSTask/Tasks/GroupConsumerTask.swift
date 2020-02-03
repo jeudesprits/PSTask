@@ -14,6 +14,7 @@ open class GroupConsumerTask<Input, Failure: Error>: ConsumerTask<Input, Failure
   public let innerQueue: TaskQueue
   
   open func setUnderlyingQueue(_ queue: DispatchQueue) -> Self {
+    precondition(state < .executing, "Cannot modify `underlyingQueue` after execution has begun.")
     innerQueue.underlyingQueue = queue
     return self
   }
@@ -326,6 +327,7 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
   public let innerQueue: TaskQueue
   
   open func setUnderlyingQueue(_ queue: DispatchQueue) -> Self {
+    precondition(state < .executing, "Cannot modify `underlyingQueue` after execution has begun.")
     innerQueue.underlyingQueue = queue
     return self
   }

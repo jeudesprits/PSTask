@@ -51,7 +51,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   private let stateLock = UnfairLock()
   private var _state = _State.initialized
-  private var state: _State {
+  internal private(set) var state: _State {
     get { stateLock.sync { _state } }
     set(newState) {
       // It's important to note that the KVO notifications are NOT called from inside
