@@ -9,9 +9,14 @@ import Foundation
 import PSLock
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-open class GroupConsumerTask<Input, Failure: Error>: ConsumerTask<Input, Failure> {
+open class GroupConsumerTask<Input, Failure: Error>: ConsumerTask<Input, Failure>, TaskQueueContainable {
   
-  private let innerQueue: TaskQueue
+  public let innerQueue: TaskQueue
+  
+  open func setUnderlyingQueue(_ queue: DispatchQueue) -> Self {
+    innerQueue.underlyingQueue = queue
+    return self
+  }
   
   // MARK: -
   
@@ -319,6 +324,11 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
 {
   
   public let innerQueue: TaskQueue
+  
+  open func setUnderlyingQueue(_ queue: DispatchQueue) -> Self {
+    innerQueue.underlyingQueue = queue
+    return self
+  }
   
   // MARK: -
   
