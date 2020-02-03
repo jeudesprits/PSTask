@@ -12,7 +12,7 @@ extension String: Error {}
 
 final class AdditionalTasksTests: XCTestCase {
   
-  private let queue = TaskQueue(name: "com.PSTask.BlockTasksTests", qos: .userInitiated)
+  private let queue = TaskQueue(name: "com.PSTask.AdditionalTasksTests", qos: .userInitiated)
   
   // MARK: -
   

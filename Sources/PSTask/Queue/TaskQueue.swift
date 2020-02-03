@@ -60,7 +60,7 @@ open class TaskQueue: OperationQueue {
   
   // MARK: -
   
-  //@available(*, unavailable)
+  @available(*, unavailable)
   open override func addOperation(_ operation: Operation) {}
   
   @available(*, unavailable)
