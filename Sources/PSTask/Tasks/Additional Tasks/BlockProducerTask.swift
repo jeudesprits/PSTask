@@ -40,3 +40,8 @@ public final class BlockProducerTask<Output, Failure: Error>: ProducerTask<Outpu
     super.init(name: name, qos: qos, priority: priority)
   }
 }
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias NonFailBlockProducerTask<Output> = BlockProducerTask<Output, Never>

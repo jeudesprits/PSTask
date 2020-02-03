@@ -14,6 +14,7 @@ public final class GatedTask: NonFailTask {
   // MARK: -
   
   private var isReadyObserver: NSKeyValueObservation!
+  private var isCancelObserver: NSKeyValueObservation!
   private var isFinishObserver: NSKeyValueObservation!
   
   // MARK: -
@@ -24,14 +25,21 @@ public final class GatedTask: NonFailTask {
       return
     }
     
-    isReadyObserver = operation.observe(\.isReady, options: .new) { (operation, change) in
-      guard let new = change.newValue, new else { return }
-      operation.start()
-    }
-    isFinishObserver = operation.observe(\.isFinished, options: .new) { [unowned self] (operation, change) in
-      guard let new = change.newValue, new else { return }
-      self.finish(with: .success)
-    }
+    isReadyObserver =
+      operation.observe(\.isReady, options: [.initial, .new]) { (operation, change) in
+        guard let isReady = change.newValue else { return }
+        if isReady { operation.start() }
+      }
+    isCancelObserver =
+      operation.observe(\.isCancelled, options: [.initial, .new]) { [unowned self] (_, change) in
+        guard let isCancelled = change.newValue else { return }
+        if isCancelled { self.finish(with: .failure(.internalFailure(ProducerTaskError.executionFailure))) }
+      }
+    isFinishObserver =
+      operation.observe(\.isFinished, options: [.initial, .new]) { [unowned self] (operation, change) in
+        guard let isFinished = change.newValue else { return }
+        if isFinished && !operation.isCancelled { self.finish(with: .success) }
+      }
   }
   
   public override func cancel() {

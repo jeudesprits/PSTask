@@ -43,3 +43,8 @@ public final class BlockConsumerProducerTask<Input, Output, Failure: Error>: Con
     super.init(name: name, qos: qos, priority: priority, producing: producing)
   }
 }
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias NonFailBlockConsumerProducerTask<Input, Output> = BlockConsumerProducerTask<Input, Output, Never>
