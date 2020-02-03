@@ -471,6 +471,7 @@ extension ProducerTask {
    }
 }
 
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension ProducerTask {
   
   @inlinable
@@ -480,5 +481,13 @@ extension ProducerTask {
     line: UInt = #line
   ) -> Tasks.AssertNoFailure<Output, Failure> {
     .init(prefix, file: file, line: line, from: self)
+  }
+  
+  @inlinable
+  public func `catch`<T: ProducerTaskProtocol>(
+    from: ProducerTask<Output, Failure>,
+    transform: @escaping (Failure) -> T
+  ) -> Tasks.Catch<Output, Failure, T> where T.Output == Output {
+    .init(from: self, transform: transform)
   }
 }
