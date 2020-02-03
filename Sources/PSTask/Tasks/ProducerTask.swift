@@ -311,42 +311,37 @@ extension ProducerTask {
   
   @inlinable
   public func map<NewOutput>(
-    underlyingQueue: DispatchQueue? = nil,
     transform: @escaping (Output) -> NewOutput
   ) -> Tasks.Map<Output, NewOutput, Failure> {
-    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
+    .init(from: self, transform: transform)
   }
   
   @inlinable
   public func tryMap<NewOutput>(
-    underlyingQueue: DispatchQueue? = nil,
     transform: @escaping (Output) throws -> NewOutput
   ) -> Tasks.TryMap<Output, NewOutput, Failure> {
-    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
+    .init(from: self, transform: transform)
   }
   
   @inlinable
   public func flatMap<T: ProducerTaskProtocol>(
-    underlyingQueue: DispatchQueue? = nil,
     transform: @escaping (Output) -> T
   ) -> Tasks.FlatMap<Output, Failure, T> where T.Output == Output, T.Failure == Failure {
-    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
+    .init(from: self, transform: transform)
   }
   
   @inlinable
   public func mapError<NewFailure: Error>(
-    underlyingQueue: DispatchQueue? = nil,
     transform: @escaping (Failure) -> NewFailure
   ) -> Tasks.MapError<Output, Failure, NewFailure> {
-    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
+    .init(from: self, transform: transform)
   }
   
   @inlinable
   public func replaceNil<NonNilOutput>(
-    underlyingQueue: DispatchQueue? = nil,
     with output: @escaping () -> NonNilOutput
   ) -> Tasks.Map<Output, NonNilOutput, Failure> where Output == NonNilOutput? {
-    .init(from: self, transform: { _ in output() }, underlyingQueue: underlyingQueue)
+    .init(from: self, transform: { _ in output() })
   }
 }
 
@@ -355,10 +350,9 @@ extension ProducerTask where Failure == Never {
   
   @inlinable
   public func setFailureType<NewFailure: Error>(
-    underlyingQueue: DispatchQueue? = nil,
     to failureType: NewFailure.Type
   ) -> Tasks.SetFailureType<Output, NewFailure> {
-    .init(from: self, underlyingQueue: underlyingQueue)
+    .init(from: self)
   }
 }
 
@@ -367,33 +361,28 @@ extension ProducerTask {
   
   @inlinable
   public func compactMap<NewOutput>(
-    underlyingQueue: DispatchQueue? = nil,
     transform: @escaping (Output) -> NewOutput?
   ) -> Tasks.CompactMap<Output, NewOutput, Failure> {
-    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
+    .init(from: self, transform: transform)
   }
   
   @inlinable
   public func tryCompactMap<NewOutput>(
-    underlyingQueue: DispatchQueue? = nil,
     transform: @escaping (Output) throws -> NewOutput?
   ) -> Tasks.TryCompactMap<Output, NewOutput, Failure> {
-    .init(from: self, transform: transform, underlyingQueue: underlyingQueue)
+    .init(from: self, transform: transform)
   }
   
   @inlinable
   public func replaceError(
-    underlyingQueue: DispatchQueue? = nil,
     with output: @escaping (Error) -> Output
   ) -> Tasks.ReplaceError<Output, Failure> {
-    .init(from: self, transform: output, underlyingQueue: underlyingQueue)
+    .init(from: self, transform: output)
   }
   
   @inlinable
-  public func ignoreOutptu(
-    underlyingQueue: DispatchQueue? = nil
-  ) -> Tasks.IgnoreOutput<Output, Failure> {
-    .init(from: self, underlyingQueue: underlyingQueue)
+  public func ignoreOutptu() -> Tasks.IgnoreOutput<Output, Failure> {
+    .init(from: self)
   }
 }
 
@@ -405,7 +394,7 @@ extension ProducerTask {
     _ t: T
   ) -> Tasks.Zip<ProducerTask, T>
     where Failure == T.Failure {
-    .init(tasks: (self, t), underlyingQueue: nil)
+    .init(tasks: (self, t))
   }
   
   @inlinable
@@ -416,7 +405,7 @@ extension ProducerTask {
   ) -> Tasks.Zip3<ProducerTask, T1, T2>
     where Failure == T1.Failure,
           T1.Failure == T2.Failure {
-      .init(tasks: (self, t1, t2), underlyingQueue: nil)
+      .init(tasks: (self, t1, t2))
   }
   
   @inlinable
@@ -430,7 +419,7 @@ extension ProducerTask {
     where Failure == T1.Failure,
           T1.Failure == T2.Failure,
           T2.Failure == T3.Failure {
-      .init(tasks: (self, t1, t2, t3), underlyingQueue: nil)
+      .init(tasks: (self, t1, t2, t3))
   }
   
   @inlinable
@@ -447,7 +436,7 @@ extension ProducerTask {
           T1.Failure == T2.Failure,
           T2.Failure == T3.Failure,
           T3.Failure == T4.Failure {
-      .init(tasks: (self, t1, t2, t3, t4), underlyingQueue: nil)
+      .init(tasks: (self, t1, t2, t3, t4))
   }
   
    @inlinable
@@ -467,7 +456,7 @@ extension ProducerTask {
            T2.Failure == T3.Failure,
            T3.Failure == T4.Failure,
            T4.Failure == T5.Failure {
-       .init(tasks: (self, t1, t2, t3, t4, t5), underlyingQueue: nil)
+       .init(tasks: (self, t1, t2, t3, t4, t5))
    }
 }
 
@@ -499,3 +488,8 @@ extension ProducerTask {
     .init(from: self, transform: transform)
   }
 }
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias NonFailProducerTask<Output> = ProducerTask<Output, Never>

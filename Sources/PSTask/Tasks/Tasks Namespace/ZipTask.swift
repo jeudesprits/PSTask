@@ -12,11 +12,11 @@ extension Tasks {
 
   public final class Zip<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol>:
     GroupProducerTask<(T1.Output, T2.Output), T1.Failure>
-    where T1.Failure == T2.Failure {
+    where T1.Failure == T2.Failure
+  {
     
     public init(
-      tasks: (T1, T2),
-      underlyingQueue: DispatchQueue? = nil
+      tasks: (T1, T2)
     ) {
       let name = String(describing: Self.self)
       
@@ -60,6 +60,7 @@ extension Tasks {
         name: name,
         qos: maxQos,
         priority: maxPriority,
+        underlyingQueue: (tasks.0 as? TaskQueueContainable)?.innerQueue.underlyingQueue,
         tasks: (tasks.0, tasks.1, zip),
         produced: zip
       )
@@ -71,7 +72,8 @@ extension Tasks {
   public final class Zip3<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, T3: ProducerTaskProtocol>:
     GroupProducerTask<(T1.Output, T2.Output, T3.Output), T1.Failure>
     where T1.Failure == T2.Failure,
-          T2.Failure == T3.Failure {
+          T2.Failure == T3.Failure
+  {
   
     public init(
       tasks: (T1, T2, T3),
@@ -132,6 +134,7 @@ extension Tasks {
         name: name,
         qos: maxQos,
         priority: maxPriority,
+        underlyingQueue: (tasks.0 as? TaskQueueContainable)?.innerQueue.underlyingQueue,
         tasks: (tasks.0, tasks.1, tasks.2, zip),
         produced: zip
       )
@@ -147,7 +150,8 @@ extension Tasks {
     GroupProducerTask<(T1.Output, T2.Output, T3.Output, T4.Output), T1.Failure>
     where T1.Failure == T2.Failure,
           T2.Failure == T3.Failure,
-          T3.Failure == T4.Failure {
+          T3.Failure == T4.Failure
+  {
     
     public init(
       tasks: (T1, T2, T3, T4),
@@ -215,6 +219,7 @@ extension Tasks {
         name: name,
         qos: maxQos,
         priority: maxPriority,
+        underlyingQueue: (tasks.0 as? TaskQueueContainable)?.innerQueue.underlyingQueue,
         tasks: (tasks.0, tasks.1, tasks.2, tasks.3, zip),
         produced: zip
       )
@@ -232,7 +237,8 @@ extension Tasks {
     where T1.Failure == T2.Failure,
           T2.Failure == T3.Failure,
           T3.Failure == T4.Failure,
-          T4.Failure == T5.Failure {
+          T4.Failure == T5.Failure
+  {
     
     public init(
       tasks: (T1, T2, T3, T4, T5),
@@ -307,6 +313,7 @@ extension Tasks {
         name: name,
         qos: maxQos,
         priority: maxPriority,
+        underlyingQueue: (tasks.0 as? TaskQueueContainable)?.innerQueue.underlyingQueue,
         tasks: (tasks.0, tasks.1, tasks.2, tasks.3, tasks.4, zip),
         produced: zip
       )
@@ -326,7 +333,8 @@ extension Tasks {
           T2.Failure == T3.Failure,
           T3.Failure == T4.Failure,
           T4.Failure == T5.Failure,
-          T5.Failure == T6.Failure {
+          T5.Failure == T6.Failure
+  {
     
     public init(
       tasks: (T1, T2, T3, T4, T5, T6),
@@ -408,6 +416,7 @@ extension Tasks {
         name: name,
         qos: maxQos,
         priority: maxPriority,
+        underlyingQueue: (tasks.0 as? TaskQueueContainable)?.innerQueue.underlyingQueue,
         tasks: (tasks.0, tasks.1, tasks.2, tasks.3, tasks.4, tasks.5, zip),
         produced: zip
       )

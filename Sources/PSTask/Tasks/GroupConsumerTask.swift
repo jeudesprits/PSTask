@@ -314,9 +314,11 @@ public typealias NonFailGroupConsumerTask<Input> = GroupConsumerTask<Input, Neve
 // MARK: -
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-open class GroupConsumerProducerTask<Input, Output, Failure: Error>: ConsumerProducerTask<Input, Output, Failure> {
+open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
+  ConsumerProducerTask<Input, Output, Failure>, TaskQueueContainable
+{
   
-  private let innerQueue: TaskQueue
+  public let innerQueue: TaskQueue
   
   // MARK: -
   
@@ -876,3 +878,8 @@ extension GroupConsumerProducerTask: TaskQueueDelegate {
     }
   }
 }
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias NonFailGroupConsumerProducerTask<Input, Output> = GroupConsumerProducerTask<Input, Output, Never>

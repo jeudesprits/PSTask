@@ -13,8 +13,7 @@ extension Tasks {
   public final class SetFailureType<Output, NewFailure: Error>: GroupProducerTask<Output, NewFailure> {
     
     public init(
-      from: ProducerTask<Output, Never>,
-      underlyingQueue: DispatchQueue? = nil
+      from: ProducerTask<Output, Never>
     ) {
       let name = String(describing: Self.self)
       
@@ -40,7 +39,7 @@ extension Tasks {
         name: name,
         qos: from.qualityOfService,
         priority: from.queuePriority,
-        underlyingQueue: underlyingQueue,
+        underlyingQueue: (from as? TaskQueueContainable)?.innerQueue.underlyingQueue,
         tasks: (from, transform),
         produced: transform
       )

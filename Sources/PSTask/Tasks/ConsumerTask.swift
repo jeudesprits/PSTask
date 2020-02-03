@@ -60,3 +60,8 @@ open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Out
     addDependency(producing)
   }
 }
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias NonFailConsumerProducerTask<Input, Output> = ConsumerProducerTask<Input, Output, Never>

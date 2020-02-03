@@ -14,8 +14,7 @@ extension Tasks {
   
     public init(
       from: ProducerTask<Output, Failure>,
-      transform: @escaping (Output) -> NewOutput,
-      underlyingQueue: DispatchQueue? = nil
+      transform: @escaping (Output) -> NewOutput
     ) {
       let name = String(describing: Self.self)
       
@@ -38,7 +37,7 @@ extension Tasks {
         name: name,
         qos: from.qualityOfService,
         priority: from.queuePriority,
-        underlyingQueue: underlyingQueue,
+        underlyingQueue: (from as? TaskQueueContainable)?.innerQueue.underlyingQueue,
         tasks: (from, transform),
         produced: transform
       )

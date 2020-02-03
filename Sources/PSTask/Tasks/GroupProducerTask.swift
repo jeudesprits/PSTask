@@ -322,9 +322,9 @@ public typealias NonFailGroupTask = GroupTask<Never>
 // MARK: -
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failure> {
+open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failure>, TaskQueueContainable {
   
-  private let innerQueue: TaskQueue
+  public let innerQueue: TaskQueue
   
   // MARK: -
   
@@ -872,3 +872,8 @@ extension GroupProducerTask: TaskQueueDelegate {
     }
   }
 }
+
+// MARK: -
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public typealias NonFailGroupProducerTask<Output> = GroupProducerTask<Output, Never>
