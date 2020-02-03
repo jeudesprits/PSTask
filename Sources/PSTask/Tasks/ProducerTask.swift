@@ -490,4 +490,12 @@ extension ProducerTask {
   ) -> Tasks.Catch<Output, Failure, T> where T.Output == Output {
     .init(from: self, transform: transform)
   }
+  
+  @inlinable
+  public func tryCatch<T: ProducerTaskProtocol>(
+    from: ProducerTask<Output, Failure>,
+    transform: @escaping (Failure) throws -> T
+  ) -> Tasks.TryCatch<Output, Failure, T> where T.Output == Output {
+    .init(from: self, transform: transform)
+  }
 }
