@@ -28,22 +28,22 @@ extension Tasks {
             finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
             return
           }
-
+          
           guard let consumed = from.produced else {
             finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
-          if case let .success(value) = consumed {
+          switch consumed {
+          case let .success(value):
             do {
-              let newValue = try transform(value)
-              finish(.success(newValue))
+              finish(.success(try transform(value)))
             } catch {
               finish(.failure(.providedFailure(error)))
             }
-          } else if case let .failure(.internalFailure(error)) = consumed {
+          case let .failure(.internalFailure(error)):
             finish(.failure(.internalFailure(error)))
-          } else if case let .failure(.providedFailure(error)) = consumed {
+          case let .failure(.providedFailure(error)):
             finish(.failure(.providedFailure(error)))
           }
       }.addDependency(from)

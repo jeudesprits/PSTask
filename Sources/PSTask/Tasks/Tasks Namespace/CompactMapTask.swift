@@ -30,15 +30,18 @@ extension Tasks {
             return
           }
           
-          let newConsumed =
-            consumed
-              .map(transform)
-              .flatMap { (value) -> Result<NewOutput, ProducerTaskProtocolError<Failure>> in
-                guard let value = value else { return .failure(.internalFailure(ProducerTaskError.executionFailure)) }
-                return .success(value)
-              }
-          
-          finish(newConsumed)
+          switch consumed {
+          case let .success(value):
+            if let newValue = transform(value) {
+              finish(.success(newValue))
+            } else {
+              finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            }
+          case let .failure(.internalFailure(error)):
+            finish(.failure(.internalFailure(error)))
+          case let .failure(.providedFailure(error)):
+            finish(.failure(.providedFailure(error)))
+          }
         }
       
       super.init(

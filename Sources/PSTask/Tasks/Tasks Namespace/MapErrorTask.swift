@@ -34,11 +34,12 @@ extension Tasks {
             return
           }
           
-          if case let .failure(.providedFailure(error)) = consumed {
+          switch consumed {
+          case let .failure(.providedFailure(error)):
             finish(.failure(.providedFailure(transform(error))))
-          } else if case let .failure(.internalFailure(error)) = consumed {
+          case let .failure(.internalFailure(error)):
             finish(.failure(.internalFailure(error)))
-          } else if case let .success(value) = consumed {
+          case let .success(value):
             finish(.success(value))
           }
         }.addDependency(from)

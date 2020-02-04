@@ -8,8 +8,6 @@
 import XCTest
 @testable import PSTask
 
-extension String: Error {}
-
 final class AdditionalTasksTests: XCTestCase {
   
   private let queue = TaskQueue(name: "com.PSTask.AdditionalTasksTests", qos: .userInitiated)
@@ -99,8 +97,8 @@ final class AdditionalTasksTests: XCTestCase {
     
     let task =
       NonFailBlockProducerTask<Int>(
-        name: "BlockProducerTask",
-        qos: .userInitiated, priority: .veryHigh
+        qos: .userInitiated,
+        priority: .veryHigh
       ) { (task, finish) in
         Thread.sleep(forTimeInterval: 1.0)
         finish(.success(21))

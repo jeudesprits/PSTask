@@ -10,7 +10,9 @@ import Foundation
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Tasks {
   
-  public final class FlatMap<Output, Failure, T: ProducerTaskProtocol>: GroupProducerTask<T.Output, T.Failure> where T.Output == Output, T.Failure == Failure {
+  public final class FlatMap<Output, Failure, T: ProducerTaskProtocol>: GroupProducerTask<T.Output, Failure>
+    where T.Output == Output, T.Failure == Failure
+  {
     
     public init(
       from: ProducerTask<Output, Failure>,
@@ -38,15 +40,18 @@ extension Tasks {
             return
           }
           
-          if case let .success(value) = consumed {
-            // TODO: - Продумать передачу `underlyingQueue`, если возвращаемая задача - групповая.
-            let newTask = transform(value).recieve { (produced) in self.finish(with: produced) }
+          switch consumed {
+          case let .success(value):
+            let newTask = transform(value).recieve { self.finish(with: $0) }
             newTask.name = "\(name).Produced"
             newTask.qualityOfService = from.qualityOfService
             newTask.queuePriority = from.queuePriority
-  
+            if let newTask = newTask as? TaskQueueContainable, let from = from as? TaskQueueContainable {
+              newTask.innerQueue.underlyingQueue = from.innerQueue.underlyingQueue
+            }
             task.produce(new: newTask)
-          } else {
+            
+          default:
             self.finish(with: consumed)
           }
           
