@@ -33,7 +33,14 @@ extension Tasks {
             return
           }
           
-          finish(consumed.flatMap { _ in .success })
+          switch consumed {
+          case .success:
+            finish(.success)
+          case let .failure(.internalFailure(error)):
+            finish(.failure(.internalFailure(error)))
+          case let .failure(.providedFailure(error)):
+            finish(.failure(.providedFailure(error)))
+          }
         }.addDependency(from)
       
       super.init(
@@ -41,7 +48,8 @@ extension Tasks {
         qos: from.qualityOfService,
         priority: from.queuePriority,
         underlyingQueue: (from as? TaskQueueContainable)?.innerQueue.underlyingQueue,
-        tasks: (from, transform)
+        tasks: (from, transform),
+        produced: transform
       )
     }
   }

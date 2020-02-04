@@ -375,13 +375,13 @@ extension ProducerTask {
   
   @inlinable
   public func replaceError(
-    with output: @escaping (Error) -> Output
+    with output: @escaping (Failure) -> Output
   ) -> Tasks.ReplaceError<Output, Failure> {
     .init(from: self, transform: output)
   }
   
   @inlinable
-  public func ignoreOutptu() -> Tasks.IgnoreOutput<Output, Failure> {
+  public func ignoreOutput() -> Tasks.IgnoreOutput<Output, Failure> {
     .init(from: self)
   }
 }
@@ -474,7 +474,6 @@ extension ProducerTask {
   
   @inlinable
   public func `catch`<T: ProducerTaskProtocol>(
-    from: ProducerTask<Output, Failure>,
     transform: @escaping (Failure) -> T
   ) -> Tasks.Catch<Output, Failure, T> where T.Output == Output {
     .init(from: self, transform: transform)
@@ -482,7 +481,6 @@ extension ProducerTask {
   
   @inlinable
   public func tryCatch<T: ProducerTaskProtocol>(
-    from: ProducerTask<Output, Failure>,
     transform: @escaping (Failure) throws -> T
   ) -> Tasks.TryCatch<Output, Failure, T> where T.Output == Output {
     .init(from: self, transform: transform)

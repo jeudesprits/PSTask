@@ -25,7 +25,8 @@ extension Tasks {
         qos: from.qualityOfService,
         priority: from.queuePriority,
         underlyingQueue: (from as? TaskQueueContainable)?.innerQueue.underlyingQueue,
-        tasks: (from))
+        tasks: (from)
+      )
       
       let transform =
         BlockConsumerTask<Output, Failure>(
@@ -48,7 +49,7 @@ extension Tasks {
               
             case let .failure(.providedFailure(error)):
               do {
-                let new = try transform(error)
+                let newTask = try transform(error)
                   .recieve { (produced) in
                     switch produced {
                     case let .success(value):
@@ -59,10 +60,13 @@ extension Tasks {
                       self.finish(with: .failure(.providedFailure(error)))
                     }
                   }
-                new.name = "\(name).Produced"
-                new.qualityOfService = from.qualityOfService
-                new.queuePriority = from.queuePriority
-                task.produce(new: new)
+                newTask.name = "\(name).Produced"
+                newTask.qualityOfService = from.qualityOfService
+                newTask.queuePriority = from.queuePriority
+                if let newTask = newTask as? TaskQueueContainable, let from = from as? TaskQueueContainable {
+                  newTask.innerQueue.underlyingQueue = from.innerQueue.underlyingQueue
+                }
+                task.produce(new: newTask)
               } catch {
                 self.finish(with: .failure(.providedFailure(error)))
               }

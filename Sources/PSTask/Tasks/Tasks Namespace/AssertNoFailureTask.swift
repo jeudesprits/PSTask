@@ -10,7 +10,7 @@ import Foundation
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Tasks {
   
-  public final class AssertNoFailure<Output, Failure: Error>: GroupProducerTask<Output, Never> {
+  public final class AssertNoFailure<Output, Failure: Error>: NonFailGroupProducerTask<Output> {
     
     public init(
       _ prefix: String = "",
@@ -21,7 +21,7 @@ extension Tasks {
       let name = String(describing: Self.self)
       
       let assert =
-        BlockProducerTask<Output, Never>(
+        NonFailBlockProducerTask<Output>(
           name: "\(name).Assert",
           qos: from.qualityOfService,
           priority: from.queuePriority
@@ -36,9 +36,10 @@ extension Tasks {
             return
           }
           
-          if case let .success(value) = consumed {
+          switch consumed {
+          case let .success(value):
             finish(.success(value))
-          } else if case let .failure(error) = consumed {
+          case let .failure(error):
             fatalError("\(prefix)\(error)", file: file, line: line)
           }
         }.addDependency(from)

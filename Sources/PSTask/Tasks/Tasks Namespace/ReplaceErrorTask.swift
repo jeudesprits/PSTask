@@ -10,16 +10,16 @@ import Foundation
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Tasks {
   
-  public final class ReplaceError<Output, Failure: Error>: GroupProducerTask<Output, Failure> {
+  public final class ReplaceError<Output, Failure: Error>: NonFailGroupProducerTask<Output> {
     
     public init(
       from: ProducerTask<Output, Failure>,
-      transform: @escaping (Error) -> Output
+      transform: @escaping (Failure) -> Output
     ) {
       let name = String(describing: Self.self)
       
       let transform =
-        BlockProducerTask<Output, Failure>(
+        NonFailBlockProducerTask<Output>(
           name: "\(name).Transform",
           qos: from.qualityOfService,
           priority: from.queuePriority
@@ -34,11 +34,12 @@ extension Tasks {
             return
           }
           
-          if case let .success(value) = consumed {
+          switch consumed {
+          case let .success(value):
             finish(.success(value))
-          } else if case let .failure(.internalFailure(error)) = consumed {
-            finish(.success(transform(error)))
-          } else if case let .failure(.providedFailure(error)) = consumed {
+          case let .failure(.internalFailure(error)):
+            finish(.failure(.internalFailure(error)))
+          case let .failure(.providedFailure(error)):
             finish(.success(transform(error)))
           }
         }.addDependency(from)
