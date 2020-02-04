@@ -79,9 +79,8 @@ final class TasksNamespaceTests: XCTestCase {
         throw "Ooops"
       }.recieve {
         switch $0 {
-        case let .failure(.providedFailure(error)):
-          guard let stringError = error as? String else { XCTFail(); return }
-          XCTAssertEqual(stringError, "Ooops")
+        case let .failure(.providedFailure(error as String)):
+          XCTAssertEqual(error, "Ooops")
           expec1.fulfill()
         default:
           XCTFail()
@@ -266,8 +265,7 @@ final class TasksNamespaceTests: XCTestCase {
         $0 == 21 ? nil : 100
       }.recieve {
         switch $0 {
-        case let .failure(.internalFailure(error)):
-          guard let error = error as? ProducerTaskError else { XCTFail(); return }
+        case let .failure(.internalFailure(error as ProducerTaskError)):
           XCTAssertEqual(error, ProducerTaskError.executionFailure)
           expec1.fulfill()
         default:
@@ -302,7 +300,58 @@ final class TasksNamespaceTests: XCTestCase {
     wait(for: [expec1, expec2], timeout: 3)
   }
   
-  
+  func testTryCompactMapTask() {
+    let expec1 = XCTestExpectation()
+    
+    let task1 =
+      NonFailBlockProducerTask<Int>(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (task, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.success(21))
+      }.tryCompactMap { (value) -> Int? in
+        if value == 21 {
+          throw "Ooops"
+        } else {
+          return 100
+        }
+      }.recieve {
+        switch $0 {
+        case let .failure(.providedFailure(error as String)):
+          XCTAssertEqual(error, "Ooops")
+          expec1.fulfill()
+        default:
+          XCTFail()
+        }
+      }
+    
+    let expec2 = XCTestExpectation()
+    
+    let task2 =
+      NonFailBlockProducerTask<Int>(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (task, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.success(21))
+      }.tryCompactMap {
+        $0 == 21 ? nil : 100
+      }.recieve {
+        switch $0 {
+        case let .failure(.internalFailure(error as ProducerTaskError)):
+          XCTAssertEqual(error, ProducerTaskError.executionFailure)
+          expec2.fulfill()
+        default:
+          XCTFail()
+        }
+      }
+    
+    queue.addTask(task1)
+    queue.addTask(task2)
+    
+    wait(for: [expec1, expec2], timeout: 3)
+  }
 }
 
 
