@@ -549,10 +549,52 @@ extension ProducerTask {
   }
 }
 
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask where Output == Void  {
+ 
+  @inlinable
+  public func breakpointOnOutput(
+    receiveOutput: @escaping (Output) -> Bool
+  ) -> Tasks.BreakpointTask<Output, Failure> {
+    fatalError("Can't call when Output == Void")
+  }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask where Failure == Never  {
+   
+  @inlinable
+  public func breakpointOnFailure(
+    receiveFailure: @escaping (Failure) -> Bool
+  ) -> Tasks.BreakpointTask<Output, Failure> {
+    fatalError("Can't call when Failure == Never")
+  }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask {
+ 
+  @inlinable
+  public func breakpointOnOutput(
+    receiveOutput: @escaping (Output) -> Bool
+  ) -> Tasks.BreakpointTask<Output, Failure> {
+    .init(from: self, receiveOutput: receiveOutput, receiveFailure: nil)
+  }
+  
+  @inlinable
+  public func breakpointOnFailure(
+    receiveFailure: @escaping (Failure) -> Bool
+  ) -> Tasks.BreakpointTask<Output, Failure> {
+    .init(from: self, receiveOutput: nil, receiveFailure: receiveFailure)
+  }
+
+  @inlinable
+  public func breakpointOnError() -> Tasks.BreakpointTask<Output, Failure> {
+    .init(from: self, receiveOutput: nil, receiveFailure: nil)
+  }
+}
 
 // MARK: -
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias NonFailProducerTask<Output> = ProducerTask<Output, Never>
-
-// raise(SIGTRAP)
