@@ -927,4 +927,26 @@ final class TasksNamespaceTests: XCTestCase {
     
     wait(for: [expec1, expec2], timeout: 3)
   }
+  
+  // MARK: -
+  
+  static var allTests = [
+    ("testMapTask", testMapTask),
+    ("testTryMapTask", testTryMapTask),
+    ("testFlatMapTask", testFlatMapTask),
+    ("testMapErrorTask", testMapErrorTask),
+    ("testSetFailureTypeTask", testSetFailureTypeTask),
+    ("testCompactMapTask", testCompactMapTask),
+    ("testTryCompactMapTask", testTryCompactMapTask),
+    ("testReplaceEmptyTask", testReplaceEmptyTask),
+    ("testIgnoreOutputTask", testIgnoreOutputTask),
+    ("testZipTask", testZipTask),
+    ("testAssertNoFailureTask", testAssertNoFailureTask),
+    ("testCatchTask", testCatchTask),
+    ("testTryCatchTask", testTryCatchTask),
+    ("testDecodeTask", testDecodeTask),
+    ("testEncodeTask", testEncodeTask),
+    ("testMapKey", testMapKey),
+    ("testBreakpointTask", testBreakpointTask),
+  ]
 }

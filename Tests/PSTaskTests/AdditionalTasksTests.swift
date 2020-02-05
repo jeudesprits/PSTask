@@ -342,4 +342,19 @@ final class AdditionalTasksTests: XCTestCase {
 
     wait(for: [expec], timeout: 3)
   }
+  
+  // MARK: -
+  
+  static var allTests = [
+    ("testBlockProducerTask", testBlockProducerTask),
+    ("testBlockTask", testBlockTask),
+    ("testNonFailBlockTask", testNonFailBlockTask),
+    ("testNonFailBlockProducerTask", testNonFailBlockProducerTask),
+    ("testBlockConsumerProducerTask", testBlockConsumerProducerTask),
+    ("testBlockConsumerTask", testBlockConsumerTask),
+    ("testNonFailBlockConsumerTask", testNonFailBlockConsumerTask),
+    ("testNonFailBlockConsumerProducerTask", testNonFailBlockConsumerProducerTask),
+    ("testEmptyTask", testEmptyTask),
+    ("testGatedTask", testGatedTask),
+  ]
 }
