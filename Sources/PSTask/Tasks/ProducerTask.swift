@@ -498,7 +498,61 @@ extension ProducerTask {
   }
 }
 
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask where Output == Data {
+  
+  @inlinable
+  public func decode<Item: Decodable>(
+    type: Item.Type,
+    decoder: JSONDecoder
+  ) -> Tasks.Decode<Failure, Item> {
+    .init(from: self, type: type, decoder: decoder)
+  }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask where Output: Encodable {
+  
+  @inlinable
+  public func encode(
+    encoder: JSONEncoder
+  ) -> Tasks.Encode<Output, Failure> {
+    .init(from: self, encoder: encoder)
+  }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask {
+  
+  @inlinable
+  public func map<NewOutput>(
+    _ keyPath: KeyPath<Output, NewOutput>
+  ) -> Tasks.MapKeyPath<Output, NewOutput, Failure> {
+    .init(from: self, keyPath: keyPath)
+  }
+  
+  @inlinable
+  public func map<NewOutput1, NewOutput2>(
+    _ keyPath1: KeyPath<Output, NewOutput1>,
+    _ keyPath2: KeyPath<Output, NewOutput2>
+  ) -> Tasks.MapKeyPath2<Output, NewOutput1, NewOutput2, Failure> {
+    .init(from: self, keyPath1: keyPath1, keyPath2: keyPath2)
+  }
+  
+  @inlinable
+  public func map<NewOutput1, NewOutput2, NewOutput3>(
+    _ keyPath1: KeyPath<Output, NewOutput1>,
+    _ keyPath2: KeyPath<Output, NewOutput2>,
+    _ keyPath3: KeyPath<Output, NewOutput3>
+  ) -> Tasks.MapKeyPath3<Output, NewOutput1, NewOutput2, NewOutput3, Failure> {
+    .init(from: self, keyPath1: keyPath1, keyPath2: keyPath2, keyPath3: keyPath3)
+  }
+}
+
+
 // MARK: -
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias NonFailProducerTask<Output> = ProducerTask<Output, Never>
+
+// raise(SIGTRAP)
