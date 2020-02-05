@@ -16,7 +16,7 @@ extension Tasks {
     
     public init(
       from: ProducerTask<Output, Failure>,
-      transform: @escaping (Failure) throws -> T
+      handler: @escaping (Failure) throws -> T
     ) {
       let name = String(describing: Self.self)
       
@@ -49,7 +49,7 @@ extension Tasks {
               
             case let .failure(.providedFailure(error)):
               do {
-                let newTask = try transform(error)
+                let newTask = try handler(error)
                   .recieve { (produced) in
                     switch produced {
                     case let .success(value):

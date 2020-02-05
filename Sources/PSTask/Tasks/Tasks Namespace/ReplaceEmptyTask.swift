@@ -1,48 +1,44 @@
 //
-//  ReplaceError.swift
+//  ReplaceEmptyTask.swift
 //  PSTask
 //
-//  Created by Ruslan Lutfullin on 2/2/20.
+//  Created by Ruslan Lutfullin on 2/5/20.
 //
 
 import Foundation
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Tasks {
-  
-  public final class ReplaceError<Output, Failure: Error>: NonFailGroupProducerTask<Output> {
+
+  public final class ReplaceEmpty<Output, Failure: Error>: GroupProducerTask<Output, Failure> {
     
     public init(
-      from: ProducerTask<Output, Failure>,
-      with output: @escaping (Failure) -> Output
+      from: Task<Failure>,
+      with output: @escaping () -> Output
     ) {
       let name = String(describing: Self.self)
       
       let transform =
-        NonFailBlockProducerTask<Output>(
+        BlockConsumerProducerTask<Void, Output, Failure>(
           name: "\(name).Transform",
           qos: from.qualityOfService,
-          priority: from.queuePriority
-        ) { (task, finish) in
+          priority: from.queuePriority,
+          producing: from
+        ) { (task, consumed, finish) in
           guard !task.isCancelled else {
             finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
             return
           }
           
-          guard let consumed = from.produced else {
-            finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
-            return
-          }
-          
           switch consumed {
-          case let .success(value):
-            finish(.success(value))
+          case .success:
+            finish(.success(output()))
           case let .failure(.internalFailure(error)):
             finish(.failure(.internalFailure(error)))
           case let .failure(.providedFailure(error)):
-            finish(.success(output(error)))
+            finish(.failure(.providedFailure(error)))
           }
-        }.addDependency(from)
+        }
       
       super.init(
         name: name,

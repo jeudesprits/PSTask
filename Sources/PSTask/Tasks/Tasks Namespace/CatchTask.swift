@@ -16,7 +16,7 @@ extension Tasks {
     
     public init(
       from: ProducerTask<Output, Failure>,
-      transform: @escaping (Failure) -> T
+      handler: @escaping (Failure) -> T
     ) {
       let name = String(describing: Self.self)
       
@@ -48,7 +48,7 @@ extension Tasks {
               self.finished(with: .failure(.internalFailure(error)))
               
             case let .failure(.providedFailure(error)):
-              let newTask = transform(error).recieve { (produced) in self.finish(with: produced) }
+              let newTask = handler(error).recieve { (produced) in self.finish(with: produced) }
               newTask.name = "\(name).Produced"
               newTask.qualityOfService = from.qualityOfService
               newTask.queuePriority = from.queuePriority

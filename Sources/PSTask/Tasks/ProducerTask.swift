@@ -311,28 +311,28 @@ extension ProducerTask {
   
   @inlinable
   public func map<NewOutput>(
-    transform: @escaping (Output) -> NewOutput
+    _ transform: @escaping (Output) -> NewOutput
   ) -> Tasks.Map<Output, NewOutput, Failure> {
     .init(from: self, transform: transform)
   }
   
   @inlinable
   public func tryMap<NewOutput>(
-    transform: @escaping (Output) throws -> NewOutput
+    _ transform: @escaping (Output) throws -> NewOutput
   ) -> Tasks.TryMap<Output, NewOutput, Failure> {
     .init(from: self, transform: transform)
   }
   
   @inlinable
   public func flatMap<T: ProducerTaskProtocol>(
-    transform: @escaping (Output) -> T
+    _ transform: @escaping (Output) -> T
   ) -> Tasks.FlatMap<Output, Failure, T> where T.Output == Output, T.Failure == Failure {
     .init(from: self, transform: transform)
   }
   
   @inlinable
   public func mapError<NewFailure: Error>(
-    transform: @escaping (Failure) -> NewFailure
+    _ transform: @escaping (Failure) -> NewFailure
   ) -> Tasks.MapError<Output, Failure, NewFailure> {
     .init(from: self, transform: transform)
   }
@@ -361,14 +361,14 @@ extension ProducerTask {
   
   @inlinable
   public func compactMap<NewOutput>(
-    transform: @escaping (Output) -> NewOutput?
+    _ transform: @escaping (Output) -> NewOutput?
   ) -> Tasks.CompactMap<Output, NewOutput, Failure> {
     .init(from: self, transform: transform)
   }
   
   @inlinable
   public func tryCompactMap<NewOutput>(
-    transform: @escaping (Output) throws -> NewOutput?
+    _ transform: @escaping (Output) throws -> NewOutput?
   ) -> Tasks.TryCompactMap<Output, NewOutput, Failure> {
     .init(from: self, transform: transform)
   }
@@ -377,12 +377,23 @@ extension ProducerTask {
   public func replaceError(
     with output: @escaping (Failure) -> Output
   ) -> Tasks.ReplaceError<Output, Failure> {
-    .init(from: self, transform: output)
+    .init(from: self, with: output)
   }
   
   @inlinable
   public func ignoreOutput() -> Tasks.IgnoreOutput<Output, Failure> {
     .init(from: self)
+  }
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension ProducerTask where Output == Void {
+  
+  @inlinable
+  public func replaceEmpty<NewOutput>(
+    with output: @escaping () -> NewOutput
+  ) -> Tasks.ReplaceEmpty<NewOutput, Failure> {
+    .init(from: self, with: output)
   }
 }
 
@@ -474,16 +485,16 @@ extension ProducerTask {
   
   @inlinable
   public func `catch`<T: ProducerTaskProtocol>(
-    transform: @escaping (Failure) -> T
+    _ handler: @escaping (Failure) -> T
   ) -> Tasks.Catch<Output, Failure, T> where T.Output == Output {
-    .init(from: self, transform: transform)
+    .init(from: self, handler: handler)
   }
   
   @inlinable
   public func tryCatch<T: ProducerTaskProtocol>(
-    transform: @escaping (Failure) throws -> T
+    _ handler: @escaping (Failure) throws -> T
   ) -> Tasks.TryCatch<Output, Failure, T> where T.Output == Output {
-    .init(from: self, transform: transform)
+    .init(from: self, handler: handler)
   }
 }
 
