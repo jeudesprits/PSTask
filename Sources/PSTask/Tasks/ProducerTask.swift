@@ -7,6 +7,7 @@
 
 import Foundation
 import PSLock
+import Combine
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias Task<Failure: Error> = ProducerTask<Void, Failure>
@@ -187,7 +188,15 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
       self.produced = produced
       hasFinishedAlready = true
       state = .finishing
-      producedCompletionBlock?(produced)
+      let block = {
+        self.producedCompletionBlock?(produced)
+        if case let .success(value) = produced { self.assignBlock?(value) }
+      }
+      if let recieveQueue = recieveQueue {
+        recieveQueue.async { block() }
+      } else {
+        block()
+      }
       finished(with: produced)
       observers.forEach { $0.taskDidFinish(self) }
       state = .finished
@@ -239,14 +248,45 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   // MARK: -
   
+  private unowned(unsafe) var recieveQueue: DispatchQueue?
+  
   @available(*, unavailable)
   open override var completionBlock: (() -> Void)? { didSet {} }
   
   private var producedCompletionBlock: ((Produced) -> Void)?
+
+  private var assignBlock: ((Output) -> Void)?
   
-  @discardableResult // TODO: - Добавлять новый `completion` поверх текущего.
+  @discardableResult
+  open func recieve(on queue: DispatchQueue) -> Self {
+    recieveQueue = queue
+    return self
+  }
+  
+  @discardableResult
   open func recieve(completion: @escaping (Produced) -> Void) -> Self {
-    producedCompletionBlock = completion
+    if let existing = producedCompletionBlock {
+      self.producedCompletionBlock = {
+        existing($0)
+        completion($0)
+      }
+    } else {
+      producedCompletionBlock = completion
+    }
+    return self
+  }
+  
+  @discardableResult
+  open func assign<Root>(to keyPath: ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Self {
+    let block: (Output) -> Void = { object[keyPath: keyPath] = $0 }
+    if let existing = assignBlock {
+      self.assignBlock = {
+        existing($0)
+        block($0)
+      }
+    } else {
+      assignBlock = block
+    }
     return self
   }
   

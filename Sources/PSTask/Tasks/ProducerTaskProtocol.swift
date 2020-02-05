@@ -69,7 +69,15 @@ public protocol ProducerTaskProtocol: Operation {
   // MARK: -
   
   @discardableResult
+  func recieve(on queue: DispatchQueue) -> Self
+  
+  @discardableResult
   func recieve(completion: @escaping (Produced) -> Void) -> Self
+  
+  // MARK: -
+  
+  @discardableResult
+  func assign<Root>(to keyPath: ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Self
 }
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
