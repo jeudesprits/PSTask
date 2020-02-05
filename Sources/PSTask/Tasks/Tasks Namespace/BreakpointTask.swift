@@ -31,18 +31,30 @@ extension Tasks {
             return
           }
           
-          if receiveOutput == nil, receiveFailure == nil, case .failure = consumed { raise(SIGTRAP) }
+          if receiveOutput == nil, receiveFailure == nil, case .failure = consumed {
+            #if DEBUG
+            raise(SIGTRAP)
+            #endif
+          }
           
           switch consumed {
           case let .success(value):
-            if let receiveOutput = receiveOutput?(value), receiveOutput { raise(SIGTRAP) }
+            if let receiveOutput = receiveOutput?(value), receiveOutput {
+              #if DEBUG
+              raise(SIGTRAP)
+              #endif
+            }
             finish(.success(value))
           
           case let .failure(.internalFailure(error)):
             finish(.failure(.internalFailure(error)))
           
           case let .failure(.providedFailure(error)):
-            if let receiveFailure = receiveFailure?(error), receiveFailure { raise(SIGTRAP) }
+            if let receiveFailure = receiveFailure?(error), receiveFailure {
+              #if DEBUG
+              raise(SIGTRAP)
+              #endif
+            }
             finish(.failure(.providedFailure(error)))
           }
         }

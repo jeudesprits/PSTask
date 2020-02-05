@@ -353,6 +353,56 @@ final class TasksNamespaceTests: XCTestCase {
     wait(for: [expec1, expec2], timeout: 3)
   }
   
+  func testReplaceEmptyTask() {
+    let expec1 = XCTestExpectation()
+    
+    let task1 =
+      BlockTask<String>(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.success)
+      }.replaceEmpty {
+          100
+      }.recieve {
+        switch $0 {
+        case let .success(value):
+          XCTAssertEqual(value, 100)
+          expec1.fulfill()
+        default:
+          XCTFail()
+        }
+     }
+    
+    
+    let expec2 = XCTestExpectation()
+    
+    let task2 =
+      BlockTask<String>(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.failure(.providedFailure("Ooops")))
+      }.replaceEmpty {
+          100
+      }.recieve {
+        switch $0 {
+        case let .failure(.providedFailure(error)):
+          XCTAssertEqual(error, "Ooops")
+          expec2.fulfill()
+        default:
+          XCTFail()
+        }
+     }
+    
+    queue.addTask(task1)
+    queue.addTask(task2)
+    
+    wait(for: [expec1, expec2], timeout: 3)
+  }
+  
   func testReplaceErrorTask() {
     let expec1 = XCTestExpectation()
     
@@ -676,6 +726,205 @@ final class TasksNamespaceTests: XCTestCase {
 
     wait(for: [expec1, expec2, expec3], timeout: 5)
   }
+  
+  func testDecodeTask() {
+    struct User: Codable, Equatable { let id: Int; let username: String }
+    
+    let expec1 = XCTestExpectation()
+    
+    let task1 =
+      BlockProducerTask<Data, String>.init(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        let json = """
+        {"id":21,"username":"jeudesprits"}
+        """
+        finish(.success(json.data(using: .utf8)!))
+      }.decode(type: User.self, decoder: JSONDecoder())
+       .recieve {
+          switch $0 {
+          case let .success(value):
+            XCTAssertEqual(value, User(id: 21, username: "jeudesprits"))
+            expec1.fulfill()
+          default:
+            XCTFail()
+          }
+      }
+    
+    
+    let expec2 = XCTestExpectation()
+    
+    let task2 =
+      BlockProducerTask<Data, String>.init(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.failure(.providedFailure("Ooops")))
+      }.decode(type: User.self, decoder: JSONDecoder())
+       .recieve {
+          switch $0 {
+          case let .failure(.providedFailure(error as String)):
+            XCTAssertEqual(error, "Ooops")
+            expec2.fulfill()
+          default:
+            XCTFail()
+          }
+      }
+    
+    queue.addTask(task1)
+    queue.addTask(task2)
+    
+    wait(for: [expec1, expec2], timeout: 3)
+  }
+  
+  func testEncodeTask() {
+    struct User: Codable, Equatable { let id: Int; let username: String }
+    
+    let expec1 = XCTestExpectation()
+    
+    let task1 =
+      BlockProducerTask<User, String>.init(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+
+        finish(.success(User(id: 21, username: "jeudesprits")))
+      }.encode(encoder: JSONEncoder())
+       .recieve {
+          switch $0 {
+          case let .success(value):
+            let jsonData = """
+            {"id":21,"username":"jeudesprits"}
+            """.data(using: .utf8)!
+            XCTAssertEqual(value, jsonData)
+            expec1.fulfill()
+          default:
+            XCTFail()
+          }
+      }
+    
+    let expec2 = XCTestExpectation()
+    
+    let task2 =
+      BlockProducerTask<User, String>.init(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.failure(.providedFailure("Ooops")))
+      }.encode(encoder: JSONEncoder())
+       .recieve {
+          switch $0 {
+          case let .failure(.providedFailure(error as String)):
+            XCTAssertEqual(error, "Ooops")
+            expec2.fulfill()
+          default:
+            XCTFail()
+          }
+      }
+    
+    queue.addTask(task1)
+    queue.addTask(task2)
+    
+    wait(for: [expec1, expec2], timeout: 3)
+  }
+  
+  func testMapKey() {
+    let expec1 = XCTestExpectation()
+    
+    let task1 =
+      BlockProducerTask<[Int], String>(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.success([1, 2, 3, 4, 5]))
+      }.map(\.self, \.count)
+       .recieve {
+        switch $0 {
+        case let .success(value):
+          XCTAssertTrue(value == ([1, 2, 3, 4, 5], 5))
+          expec1.fulfill()
+        default:
+          XCTFail()
+        }
+      }
+    
+    let expec2 = XCTestExpectation()
+    
+    let task2 =
+      BlockProducerTask<[Int], String>(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.failure(.providedFailure("Ooops")))
+      }.map(\.self, \.count)
+       .recieve {
+        switch $0 {
+        case let .failure(.providedFailure(error)):
+          XCTAssertEqual(error, "Ooops")
+          expec2.fulfill()
+        default:
+          XCTFail()
+        }
+      }
+    
+    queue.addTask(task1)
+    queue.addTask(task2)
+    
+    wait(for: [expec1, expec2], timeout: 3)
+  }
+  
+  func testBreakpointTask() {
+    let expec1 = XCTestExpectation()
+    
+    let task1 =
+      BlockProducerTask<Int, String>(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.success(21))
+      }.breakpointOnError()
+       .recieve {
+          switch $0 {
+          case let .success(value):
+            XCTAssertEqual(value, 21)
+            expec1.fulfill()
+          default:
+            XCTFail()
+          }
+      }
+    
+    let expec2 = XCTestExpectation()
+    
+    let task2 =
+      BlockProducerTask<Int, String>(
+        qos: .userInitiated,
+        priority: .veryHigh
+      ) { (_, finish) in
+        Thread.sleep(forTimeInterval: 2)
+        finish(.success(100))
+      }.breakpointOnOutput {
+        $0 == 21
+      }.recieve {
+          switch $0 {
+          case let .success(value):
+            XCTAssertEqual(value, 100)
+            expec2.fulfill()
+          default:
+            XCTFail()
+          }
+      }
+    
+    queue.addTask(task1)
+    queue.addTask(task2)
+    
+    wait(for: [expec1, expec2], timeout: 3)
+  }
 }
-
-
