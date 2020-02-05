@@ -7,7 +7,6 @@
 
 import Foundation
 import PSLock
-import Combine
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public typealias Task<Failure: Error> = ProducerTask<Void, Failure>
@@ -266,7 +265,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   @discardableResult
   open func recieve(completion: @escaping (Produced) -> Void) -> Self {
     if let existing = producedCompletionBlock {
-      self.producedCompletionBlock = {
+      producedCompletionBlock = {
         existing($0)
         completion($0)
       }
@@ -280,7 +279,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   open func assign<Root>(to keyPath: ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Self {
     let block: (Output) -> Void = { object[keyPath: keyPath] = $0 }
     if let existing = assignBlock {
-      self.assignBlock = {
+      assignBlock = {
         existing($0)
         block($0)
       }
