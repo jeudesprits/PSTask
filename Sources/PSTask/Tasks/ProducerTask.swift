@@ -249,6 +249,14 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   private unowned(unsafe) var recieveQueue: DispatchQueue?
   
+  @discardableResult
+  open func recieve(on queue: DispatchQueue) -> Self {
+    recieveQueue = queue
+    return self
+  }
+  
+  // MARK: -
+  
   @available(*, unavailable)
   open override var completionBlock: (() -> Void)? { didSet {} }
   
@@ -256,11 +264,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
 
   private var assignBlock: ((Output) -> Void)?
   
-  @discardableResult
-  open func recieve(on queue: DispatchQueue) -> Self {
-    recieveQueue = queue
-    return self
-  }
+  // MARK: -
   
   @discardableResult
   open func recieve(completion: @escaping (Produced) -> Void) -> Self {
