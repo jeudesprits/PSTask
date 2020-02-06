@@ -41,6 +41,10 @@ This document will try to describe what tasks are, why they are a useful concept
 * [GroupConsumerProducerTask](#groupconsumerproducertask)
   * [Typealiases](#typealiases)
   * [Initializing](#initializing)
+* [Additional tasks](#additional-tasks)
+  * [Block tasks](#block-tasks)
+  * [Gated task](#gated-task)
+  * [Empty task](#empty-task)
 * [Operator tasks](#operator-tasks)
 
 ## General
@@ -656,29 +660,154 @@ final class MyProducerGroupTask: GroupProducerTask<...> {
 } 
 ```
 
+## GroupConsumerProducerTask
 
+Well, the last abstract class is the `GroupConsumerProducerTask`, which inherits from `ConsumerProducerTask`. All that has been said about group tasks above applies to this class. In contrast to `GroupProducerTask`, the ability to get the result from another task, which is provided by inheritance from `ConsumerProducerTask`, is added.
 
+```swift
+class GroupConsumerProducerTask<Input, Output, Failure: Error>:
+  ConsumerProducerTask<Input, Output, Failure>, TaskQueueContainable
+```
 
+### Typealiases
 
+By tradition, it has three aliases:
 
+```swift
+typealias GroupConsumerTask<Input, Failure: Error> = 
+  GroupConsumerProducerTask<Input, Void, Failure>
 
+typealias NonFailGroupConsumerTask<Input> = GroupConsumerTask<Input, Never>
 
+typealias NonFailGroupConsumerProducerTask<Input, Output> = 
+  GroupConsumerProducerTask<Input, Output, Never>
+```
 
+### Initializing
 
+This class also has two initializers, which practically do not differ in meaning from the corresponding `GroupProducerTask` class:
 
+```swift
+init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, ...>(
+  name: String? = nil,
+  qos: QualityOfService = .default,
+  priority: Operation.QueuePriority = .normal,
+  producing: ProducingTask,
+  underlyingQueue: DispatchQueue? = nil,
+  tasks: (T1, T2, ...)
+)
+```
 
+and
 
+```swift
+init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, ...>(
+  name: String? = nil,
+  qos: QualityOfService = .default,
+  priority: Operation.QueuePriority = .normal,
+  underlyingQueue: DispatchQueue? = nil,
+  producing: ProducingTask,
+  tasks: (T1, T2, ...),
+  produced: ProducerTask<Output, Failure>
+)
+```
 
- 
+## Additinal tasks
 
+The library provides a couple of ready-made tasks, the number of which will grow over time.
 
+### Block task
 
+Block tasks provide an opportunity without creating subclasses to create an task with specific actions described inside the closure:
 
+```swift
+let task =
+  BlockProducerTask<Int, String>(
+    name: "BlockProducerTask",
+    qos: .userInitiated, priority: .veryHigh
+  ) { (task, finish) in
+    Thread.sleep(forTimeInterval: 1.0)
+    finish(.success(21))
+  }
+  .recieve {
+    switch $0 {
+    case let .success(value):
+      XCTAssertEqual(value, 21)
+    case .failure:
+      XCTFail()
+    }
+    
+    expec.fulfill()
+  }
+```
 
+Block operations are provided for each of the classes:
 
+```swift
+typealias BlockTask<Failure: Error> = BlockProducerTask<Void, Failure>
 
+typealias NonFailBlockTask = BlockTask<Never>
 
+final class BlockProducerTask<Output, Failure: Error>: ProducerTask<Output, Failure>
 
+typealias NonFailBlockProducerTask<Output>
+```
+
+and
+
+```swift
+typealias BlockConsumerTask<Input, Failure: Error> = 
+  BlockConsumerProducerTask<Input, Void, Failure>
+
+typealias NonFailBlockConsumerTask<Input> = BlockConsumerTask<Input, Never>
+
+final class BlockConsumerProducerTask<Input, Output, Failure: Error>:  
+  ConsumerProducerTask<Input, Output, Failure>
+
+typealias NonFailBlockConsumerProducerTask<Input, Output> = 
+  BlockConsumerProducerTask<Input, Output, Never>
+```
+
+### Gated task
+
+Gated task allows you to wrap up any `Operation`:
+
+```swift
+final class MyOperation: Operation { 
+
+  override func main() { Thread.sleep(forTimeInterval: 2) } 
+}
+
+let myop = MyOperation()
+
+let task =
+  GatedTask(
+    qos: .userInitiated,
+    priority: .veryHigh,
+    operation: myop
+  )
+  .recieve {
+    switch $0 {
+    case .success:
+      XCTAssertTrue(true)
+      expec.fulfill()
+    case .failure:
+      XCTFail()
+    }
+ }
+
+queue.addTask(task)
+```
+
+### Empty task
+
+🤷‍♂️ 
+
+Usually used only as an indicator. For example, an empty task can be used as a "start" task, on which other tasks will depend, which will not begin their execution exactly until the "start" task is added to the queue and executed.
+
+```swift
+let startingTask = EmptyTask()
+```
 
 ## Operator tasks
 
@@ -689,14 +818,17 @@ Better to see once:
 ```swift
 let t =
   MyProducerTask<Data?, SomeError>(qos: .userInitiated, priority: .high)
-     .replaceNil(with: ...) // Convert `Data?` to `Data`...
-     .map {
+    .replaceNil(with: ...) // Convert `Data?` to `Data`...
+    .map {
        // Convert `Data` to `UIImage`...
-    }.mapError {
+    }
+    .mapError {
       // Convert `SomeError` to `NewError`...
-    }.flatMap {
+    }
+    .flatMap {
       // Convert to New Task...
-    }.recieve {
+    }
+    .recieve {
       switch $0 {
       case let .success(value):
       // ...
@@ -720,19 +852,23 @@ let t2 = ...
 
 let t =
   MyProducerTask<Data?, SomeError>(qos: .userInitiated, priority: .high)
-     .replaceNil(with: ...) // Convert `Data?` to `Data`...
-     .map {
+    .replaceNil(with: ...) // Convert `Data?` to `Data`...
+    .map {
        // Convert `Data` to `UIImage`...
-    }.addDependency(t1) // `map` will start working as soon as the task before it 
-                        // and the task added as a dependency is completed.
-     .mapError {
+    }
+    .addDependency(t1) // `map` will start working as soon as the task before it 
+                       // and the task added as a dependency is completed.
+    .mapError {
       // Convert `SomeError` to `NewError`...
-    }.addDependency(t2) 
-     .recieve { // Just get the result of this intermediate `mapError` task.
+    }
+    .addDependency(t2) 
+    .recieve { // Just get the result of this intermediate `mapError` task.
        print($0)
-    }.flatMap {
+    }
+    .flatMap {
       // Convert to New Task...
-    }.recieve {
+    }
+    .recieve {
       switch $0 {
       case let .success(value):
       // ...
@@ -748,4 +884,4 @@ taskQueue.addTask(t)
 
 # Sooner
 
-This is only a small part of the possibilities. Soon I will add documentation. There is much more that has not been said. Tasks can not only generate a certain result, but can also receive it from another task. This way you can easily organize task chains. *Operator* functions do exactly the same thing. I have not yet talked about grouping several tasks into one task. Thank you for reaching the end. 😃
+There is much more that has not been said. Thank you for reaching the end. 😃
