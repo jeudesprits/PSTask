@@ -16,11 +16,61 @@
 
 # PSTask
 
-`PSTask` is an improved, fully generic version of `NSOperation`. `PSTask` provides great opportunities for working with `NSOperation`'s, dependency management, building chains, grouping them, and much more ...
+This document will try to describe what tasks are, why they are a useful concept, and how to use and create them.
 
-First you need to remember one thing, throughout the library, instead of the concept of an operation, the concepts of a task are used. 
+* [General](#general)
+  * [Why](#why)
+  * [How they work](#how-they-work) 
+* [TaskQueue](#taskqueue)
+* [ProducerTask](#producertask)
+  * [Typealiases](#typealiases)
+  * [Finishing](#finishing)
 
-Next, I will try to explain the basic work with the library.
+## General
+### Why
+
+`PSTask` is an improved, fully generic version of `Operation`. `PSTask` provides great opportunities for working with `Operation`'s, dependency management, building chains, grouping them, and much more ...
+
+But you need to remember one thing, throughout the library, instead of the concept of an **operation**, the concepts of a **task** are used. 
+
+### How they work
+
+Well... Seeing is believing:
+
+```swift
+enum NetworkingError: Error { case clientError(Error) ... }
+
+let task = // Group Task contains (#1, #2, #3, #4) as chain
+  BlockProducerTask<Data?, NetworkingError>( // Task #1
+    qos: .userInitiated,
+    priority: .veryHigh
+  ) { (task, finish) in
+    guard !task.isCancelled else {
+      finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+      return
+    }
+    
+    URLSession.shared.dataTask(with: URL(string: "...")!) { (data, response, error) in
+      if let error = error {
+        finish(.failure(.providedFailure(.clientError(error))))
+        return
+      }
+      
+      // Handle other errors...
+      
+      finish(.success(data))
+    }.resume()
+  }
+  .compactMap { $0 } // Task #2
+  .decode(type: [Post].self, decoder: JSONDecoder()) // Task #3
+  .catch { ... } // Task #4
+  .recieve(on: .main)
+  .assign(to: \.posts, on: model)
+  
+  queue.addTask(task)
+```
+
+
 
 ## TaskQueue
 
@@ -47,7 +97,7 @@ let taskQueue =
   )
 ```
 
-Tasks are added to the queue in the same way as for `NSOperationQueue`:
+Tasks are added to the queue in the same way as for `OperationQueue`:
 
 ```swift
 let t1 = ...
@@ -74,7 +124,6 @@ Moreover, you can add a **synchronous** block-task, that method executes the blo
 ```swift
 taskQueue.addBarrierBlock { /* Some synchronous work... */ }
 ```
-See the documentation for a complete list of methods and properties.
 
 ## ProducerTask
 
@@ -91,38 +140,52 @@ The main idea is that any task, no matter what work it performs, synchronous or 
 ```swift
 enum MyFirstProducerTaskError: Error {
 
-  case urlError(Error)
-  case invalidServerResponse(URLResponse)
-  case invalidServerStatusCode(Int)
+  case clientError(Error)
+  case serverError(HTTPURLResponse)
+  case mimeTypeError(String)
 }
 
 final class MyFirstProducerTask: ProducerTask<Data?, MyFirstProducerTaskError> {
-  
+
+  private var urlTask: URLSessionDataTask!
+   
   override func execute() {
     let url = URL(string: "https://www.example.com/")!
     
-    URLSession.shared.dataTask(with: url) { data, response, error in
-      if let error = error {
-        self.finish(with: .failure(.providedFailure(.urlError(error))))
-        return
-      }
+    urlTask = URLSession.shared.dataTask(with: url) { data, response, error in
+      guard !task.isCancelled else {
+          finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+          return
+        }
+        
+      URLSession.shared.dataTask(with: URL(string: "...")!) { (data, response, error) in
+        if let error = error {
+          finish(.failure(.providedFailure(.clientError(error))))
+          return
+        }
       
-      guard let httpResponse = response as? HTTPURLResponse else {
-        self.finish(with: .failure(.providedFailure(.invalidServerResponse(response!))))
-        return
-      }
+        let httpResponse = response as? HTTPURLResponse
+        if let httpResponse = httpResponse,
+           (200...299).contains(httpResponse.statusCode)
+        {
+          finish(.failure(.providedFailure(.serverError(httpResponse))))
+          return
+        }
       
-      guard (200...299).contains(httpResponse.statusCode) else {
-        self.finish(with: .failure(.providedFailure(.invalidServerStatusCode(httpResponse.statusCode))))
-        return
-      }
+        if let mimeType = httpResponse!.mimeType, mimeType == "application/json" {
+          finish(.failure(.providedFailure(.mimeTypeError(mimeType))))
+          return
+        }
       
-      if let mimeType = httpResponse.mimeType,
-         mimeType == "application/json"
-      {
-        self.finish(with: .success(data))
-      }
-    }.resume()
+        finish(.success(data))
+    }
+    
+    urlTask.resume()
+  }
+  
+  override func cancel() {
+    urlTask?.cancel()
+    super.cancel()
   }
 }
 
@@ -147,10 +210,7 @@ enum ProducerTaskProtocolError<Failure: Error>: Error {
 For example, you can create your abstract task. Your task, in addition to the work that the user transferred, carries out some of its own, as a result of which an error may also occur:
 
 ```swift
-enum MyTaskError: Error {
-
-  case oops
-}
+enum MyTaskError: Error { case oops }
 
 class MyTask<Output, Failure: Error>: ProducerTask<Output, Failure> {
   
@@ -160,10 +220,7 @@ class MyTask<Output, Failure: Error>: ProducerTask<Output, Failure> {
   }
 }
 
-enum UsersError: Error {
-
-  case someFailure
-}
+enum UsersError: Error { case someFailure }
 
 final class UsersTask: MyTask<Int, UsersError> {
   
@@ -173,25 +230,24 @@ final class UsersTask: MyTask<Int, UsersError> {
   }
 }
 ```
-### ProducerTask typealiases
+### Typealiases
 
-In addition to the main `ProducerTask` class, there are two simple classes that are actually just aliases:
+In addition to the main `ProducerTask` class, there are three simple aliases:
 
 ```swift
 typealias Task<Failure: Error> = ProducerTask<Void, Failure>
 
 typealias NonFailTask = ProducerTask<Void, Never>
+
+typealias NonFailProducerTask<Output> = ProducerTask<Output, Never>
 ```
 
-`Task` is a normal task, with the only difference being that it returns nothing. `NonFailTask` is the same as `Task`, but it can never return an error.
+`Task` is a normal task, with the only difference being that it returns nothing. `NonFailTask` is the same as `Task`, but it can never return an error. `NonFailProducerTask` is the same as `ProducerTask`, but with non-fail error.
 
 Example for `Task`:
 
 ```swift
-enum MyTaskError: Error {
-  
-  case .oops
-}
+enum MyTaskError: Error { case .oops }
 
 final class MyTask: Task<MyTaskError> {
   
@@ -221,7 +277,21 @@ final class MyNonFailTask: NonFailTask {
 
 ```
 
-### ProducerTask finished(with:) method
+Example for `NonFailProducerTask `:
+
+```swift
+final class MyNonFailProducerTask: NonFailProducerTask<Int> {
+  
+  override func execute() {
+    
+    // No errors, just success at the end of your work...
+    finish(with: .success(100))
+  }
+}
+
+```
+
+### Finishing
 
 In addition to the main `execute()` method, you can override the `finished(with:)` method, which is called, as the name implies, after the task finishes, in which the result of the task is transferred.
 
