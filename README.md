@@ -712,7 +712,7 @@ init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, ...>(
 )
 ```
 
-## Additinal tasks
+## Additional tasks
 
 The library provides a couple of ready-made tasks, the number of which will grow over time.
 
