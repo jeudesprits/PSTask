@@ -25,6 +25,12 @@ This document will try to describe what tasks are, why they are a useful concept
 * [ProducerTask](#producertask)
   * [Typealiases](#typealiases)
   * [Finishing](#finishing)
+  * [Recieving](#recieving)
+  * [Asigning](#asigning)
+  * [Recieving queue](#recieving-queue)
+  * [Producing new tasks inside task](#producing-new-tasks-inside-task)
+  * [Initializing](#initializing)
+  * [Dependencies](#dependencies)
 
 ## General
 ### Why
@@ -308,7 +314,7 @@ final class MyTask: Task<SomeError> {
     switch produced {
     case .success:
        // ...
-    case let .failure(error):
+    case let .failure(.providedFailure(error)):
       // ...
     }
     
@@ -317,11 +323,11 @@ final class MyTask: Task<SomeError> {
 }
 ```
 
-### ProducerTask recieve(completion:) method
+### Recieving
 
-But this method is more suitable for people who create their tasks for reuse and in the completion of work they want to perform some kind of internal work.
+`finished(with:)` method is more suitable for people who create their tasks for reuse and in the completion of work they want to perform some kind of internal work.
 
-Generally speaking, for any operation for ordinary purposes, to get the result of the task you should use the following method:
+Generally speaking, for any operation for ordinary purposes, to get the result of the task you should use the following method `recieve(completion:)`:
 
 ```swift
 let t1 =
@@ -329,8 +335,8 @@ let t1 =
     .recieve(completion: { (produced) in
       switch produced {
       case let .success(value):
-      // ...
-      case let .failure(error):
+        // ...
+      case let .failure(.providedFailure(error)):
         // ...
       }
     })
@@ -342,14 +348,35 @@ let t2 =
     .recieve {
       switch $0 {
       case let .success(value):
-      // ...
-      case let .failure(error):
+        // ...
+      case let .failure(.providedFailure(error)):
         // ...
       }
     }
 ```
 
-### ProducerTask produce(new:) method
+### Asigning
+
+`assign(to:on:)` method allows you to directly set the value for the specified key-path of the passed object, so only the task will be completed successfully:
+
+```swift
+let t =
+  MyProducerTask<Int, SomeError>()
+    .assign(to: \.postCount, on: model)
+
+``` 
+
+### Recieving queue
+
+`recieve(on:)` method allows you to specify the `DispatchQueue` where the `recieve(completion:)` and `assign(to:on:)` methods will be executed:
+
+```swift
+let t =
+  MyProducerTask<Int, SomeError>()
+    .recieve(on: .main)
+    .assign(to: \.postCount, on: model)
+```
+### Producing new tasks inside task
 
 It may seem strange to you, but the task itself may give rise to another task, which will automatically be added to the same queue in which the task itself is located.
 
@@ -389,9 +416,9 @@ final class GetLocationTask: ProducerTask<CLLocation, SomeError>, CLLocationMana
 }
 ```
 
-### ProducerTask init
+### Initializing
 
-`ProducerTask` abstract class is provided with the following initializer:
+`ProducerTask` class provided with the following initializer:
 
 ```swift
 init(
@@ -410,15 +437,15 @@ let t =
       switch $0 {
       case let .success(value):
       // ...
-      case let .failure(error):
+      case let .failure(.providedFailure(error)):
         // ...
       }
     }
 ```
 
-### ProducerTask dependencies
+### Dependencies
 
-Like `NSOperation`, any task can have dependencies. Dependencies mean that the current task will not start its work exactly until all task on which it depends, are either completed or canceled. In order to add a task as a dependency, just use the `addDependency(_:)` method. Like that:
+Like `Operation`, any task can have dependencies. Dependencies mean that the current task will not start its work exactly until all task on which it depends, are either completed or canceled. In order to add a task as a dependency, just use the `addDependency(_:)` method. Like that:
 
 ```swift
 let t1 = ...
