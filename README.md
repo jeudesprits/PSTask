@@ -31,6 +31,17 @@ This document will try to describe what tasks are, why they are a useful concept
   * [Producing new tasks inside task](#producing-new-tasks-inside-task)
   * [Initializing](#initializing)
   * [Dependencies](#dependencies)
+* [ConsumerProducerTask](#consumerproducertask)
+  * [Typealiases](#typealiases)
+  * [Initializing](#initializing)
+* [GroupProducerTask](#groupproducertask)
+  * [Typealiases](#typealiases)
+  * [Initializing](#initializing)
+  * [Finishing inner tasks](#finishing-inner-tasks)
+* [GroupConsumerProducerTask](#groupconsumerproducertask)
+  * [Typealiases](#typealiases)
+  * [Initializing](#initializing)
+* [Operator tasks](#operator-tasks)
 
 ## General
 ### Why
@@ -378,7 +389,7 @@ let t =
 ```
 ### Producing new tasks inside task
 
-It may seem strange to you, but the task itself may give rise to another task, which will automatically be added to the same queue in which the task itself is located.
+It may seem strange to you, but the task itself may give rise to another task with `produce(new:)` method, which will automatically be added to the same queue in which the task itself is located.
 
 For example, you have an task that checks the location. At some point, it may happen that you do not have access to this location and you would like to start another task at that moment, inside this one, which will request permission to use the location.
 
@@ -467,7 +478,209 @@ let t =
 
 Similarly, you can remove a task from your dependencies using `removeDependency(_:)` method.
 
-### ProducerTask operators
+## ConsumerProducerTask
+
+Sometimes, in addition to the fact that the task produces a value, you need to get another value for the input and build your output value from this value. For these purposes, another abstract class, `ConsumerProducerTask`, is introduced, which is inherited from `ProducerTask`. 
+
+```swift
+class ConsumerProducerTask<Input, Output, Failure: Error>: 
+  ProducerTask<Output, Failure>, ConsumerProducerTaskProtocol
+```
+
+Unlike `ProducerTask`, here for work it is necessary to override another `execute(with:)` method to which the result of the previous task is transmitted. The whole work of establishing a dependency, transferring the result from one task to another is undertaken by the class:
+
+```swift
+enum SomeError: Error { ... }
+
+final class MyFirstConsumerProducerTask: ConsumerProducerTask<Data, UIImage, SomeError> {
+
+  override func execute(with consumed: Consumed) {
+    switch consumed {
+    case let .success(data):
+     // Convert Data to UIImage...
+     finish(with: .success(image))
+    case let .failure(...):
+     ...
+    }
+  }
+}
+```
+
+The only limitation is that the type of `Failure` should be the same for both tasks.
+
+### Typealiases
+
+In addition to this class, as well as for `ProducerTask`, there are 3 aliases:
+
+```swift
+typealias ConsumerTask<Input, Failure: Error> = ConsumerProducerTask<Input, Void, Failure>
+
+typealias NonFailConsumerTask<Input> = ConsumerTask<Input, Never>
+
+typealias NonFailConsumerProducerTask<Input, Output> = ConsumerProducerTask<Input, Output, Never>
+```
+
+I think their meaning is clear from the name. It is usually used to reduce the number of generic parameters.
+
+### Initializing
+
+There is only one initializer available that is almost identical to the corresponding `ProducerTask` initializer:
+
+```swift
+init(
+  name: String? = nil,
+  qos: QualityOfService = .default,
+  priority: Operation.QueuePriority = .normal,
+  producing: ProducingTask
+)
+```
+
+## GroupProducerTask
+
+Group tasks practically do not differ from the tasks presented above, but they have one additional property - they can perform a group of tasks within one task. This is achieved through an internal queue of tasks. This will never have any performance problems, because in most cases, tasks will be performed on the same `DispatchQueue`, on which the group task itself will be performed. (I remind you that under the hood of any `OperationQueue` is a `DispatchQueue`)
+
+
+`GroupProducerTask` is a continuation of a chain of abstract classes that inherits from `ProducerTask`:
+
+```swift
+class GroupProducerTask<Output, Failure: Error>: 
+  ProducerTask<Output, Failure>, TaskQueueContainable
+```
+
+### Typealiases
+
+By analogy with the previous classes, we also have exactly three aliases:
+
+```swift
+typealias GroupTask<Failure: Error> = GroupProducerTask<Void, Failure>
+
+typealias NonFailGroupTask = GroupTask<Never>
+
+typealias NonFailGroupProducerTask<Output> = GroupProducerTask<Output, Never>
+
+```
+
+### Initializing
+
+Unlike ordinary tasks, when inheriting from group tasks, most of the work will be written in the initializer. There are two types of initializers:
+
+```swift
+init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, ...>(
+  name: String? = nil,
+  qos: QualityOfService = .default,
+  priority: Operation.QueuePriority = .normal,
+  underlyingQueue: DispatchQueue? = nil,
+  tasks: (T1, T2, ...)
+)
+```
+
+and
+
+```swift
+init<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol, ...>(
+  name: String? = nil,
+  qos: QualityOfService = .default,
+  priority: Operation.QueuePriority = .normal,
+  underlyingQueue: DispatchQueue? = nil,
+  tasks: (T1, T2, ...),
+  produced: ProducerTask<Output, Failure>
+)
+```
+
+It is important to show an example of inheritance from group tasks:
+
+```swift
+final class GetImageTask: GroupProducerTask<UIImage, SomeError> {
+
+  init() {
+    let download = DownloadTask<Data, GetImageError>(...)
+    let convert = ConvertTask<Data, UIImage, GetImageError>(...)
+    let downsample = DownsampleTask<UIImage, UIImage, GetImageError>(...)
+    
+    super.init(tasks: (download, convert, downsample))
+    
+    let notify = // Notify, change `Failure` type and return `UIImage`
+      NotifyTask<UIImage, NotifyError>(...) 
+       .addDependency(downsample)
+       .recieve { [unowned self] (produced) in
+         switch produced {
+         case let .success(image):
+           self.finish(image)
+         case let .failure(.providedFailure(...))
+           // ...
+         }
+       }
+       
+     addTask(notify)
+  }
+}
+```
+
+This example shows the use of the first type of initializer, when the task generating the final result is not provided directly and you have to do it yourself by calling the `self.finish(with:)`
+
+This is sometimes necessary, when you need to do some work before completing an tasks, and you need access to `self`. This gives you a complete carte blanche. You complete task exactly when you consider it necessary.
+
+On the other hand, when you do not want to do any work to complete the task, you can specify a specific task whose result will be used as the result of a group task:
+
+```swift
+final class GetImageTask: GroupProducerTask<UIImage, SomeError> {
+
+  init() {
+    let download = DownloadTask<Data, GetImageError>(...)
+    let convert = ConvertTask<Data, UIImage, GetImageError>(...)
+    let downsample = DownsampleTask<UIImage, UIImage, GetImageError>(...)
+    
+    super.init(
+      tasks: (download, convert, downsample), 
+      produced: downsample
+    )
+  }
+}
+
+```
+
+Group tasks allow you to wrap the list of taks within one. Such tasks are extremely convenient for reuse.
+
+### Finishing inner tasks
+
+If you want to be notified when a task is completed within a group, you can override `taskDidFinish(_:)` method:
+
+```swift
+final class MyProducerGroupTask: GroupProducerTask<...> {
+
+  // ...
+
+  override func taskDidFinish<T: ProducerTaskProtocol>(_ task: T) {
+    // After completing any task within the group, this method will be called.
+  }
+} 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+## Operator tasks
 
 `ProducerTask` can provide much more features than what was presented above. These features are *operator* functions, similar to those you might see in **RX** or recently introduced by Apple - **Combine** framework.
 
