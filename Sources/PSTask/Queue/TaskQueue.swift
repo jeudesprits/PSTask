@@ -45,11 +45,11 @@ internal struct _TaskQueueDelegateObserver {
 extension _TaskQueueDelegateObserver: Observer {
   
   internal func task<T1: ProducerTaskProtocol, T2: ProducerTaskProtocol>(_ task: T1, didProduce newTask: T2) {
-    taskQueue.addTask(newTask)
+    self.taskQueue.addTask(newTask)
   }
   
   internal func taskDidFinish<T: ProducerTaskProtocol>(_ task: T) {
-    taskQueue.delegate?.taskQueue(taskQueue, didFinish: task)
+    self.taskQueue.delegate?.taskQueue(taskQueue, didFinish: task)
   }
 }
 
@@ -102,13 +102,13 @@ open class TaskQueue: OperationQueue {
     // and it's now it a state where it can proceed with evaluating conditions, if appropriate.
     task.willEnqueue()
     
-    delegate?.taskQueue(self, willAdd: task)
+    self.delegate?.taskQueue(self, willAdd: task)
     
     super.addOperation(task)
   }
   
   open func addTaskAfter<T: ProducerTaskProtocol>(_ task: T, deadline: DispatchTime) {
-    DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: deadline) { self.addTask(task) }
+    DispatchQueue.global().asyncAfter(deadline: deadline) { self.addTask(task) }
   }
 
   open func addBlockTask(_ block: @escaping () -> Void) { super.addOperation(block) }
@@ -120,15 +120,7 @@ open class TaskQueue: OperationQueue {
   @available(*, unavailable)
   public final override func waitUntilAllOperationsAreFinished() {}
   
-  public final func waitUntilAllTasksAreFinished() {
-    #if !DEBUG
-    fatalError(
-      "Waiting on tasks is an anti-pattern. Remove this ONLY if you're absolutely sure there is No Other Way™."
-    )
-    #else
-    super.waitUntilAllOperationsAreFinished()
-    #endif
-  }
+  public final func waitUntilAllTasksAreFinished() { super.waitUntilAllOperationsAreFinished() }
   
   // MARK: -
   
@@ -152,9 +144,9 @@ open class TaskQueue: OperationQueue {
   ) {
     super.init()
     self.name = name
-    qualityOfService = qos
-    maxConcurrentTaskCount = maxConcurrentTasks
+    self.qualityOfService = qos
+    self.maxConcurrentTaskCount = maxConcurrentTasks
     self.underlyingQueue = underlyingQueue
-    isSuspended = startSuspended
+    self.isSuspended = startSuspended
   }
 }
