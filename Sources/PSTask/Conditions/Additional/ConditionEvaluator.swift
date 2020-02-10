@@ -14,7 +14,7 @@ internal struct _ConditionEvaluator {
   
   // MARK: -
   
-  static func evaluate<T: ProducerTaskProtocol>(_ conditions: [AnyTaskCondition], for task: T, completion: @escaping ([Result<Void, Error>]) -> Void) {
+  static func evaluate<T: ProducerTaskProtocol>(_ conditions: [AnyCondition], for task: T, completion: @escaping ([Result<Void, Error>]) -> Void) {
     let group = DispatchGroup()
 
     var results = [Result<Void, Error>]()

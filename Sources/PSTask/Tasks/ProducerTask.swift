@@ -76,10 +76,10 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   // MARK: -
   
-  open private(set) var conditions = [AnyTaskCondition]()
+  open private(set) var conditions = [AnyCondition]()
   
   @discardableResult
-  open func addCondition<C: TaskCondition>(_ condition: C) -> Self {
+  open func addCondition<C: Condition>(_ condition: C) -> Self {
     precondition(state < .pending, "Cannot modify conditions after execution has begun.")
     conditions.append(.init(condition))
     return self

@@ -843,8 +843,9 @@ final class TasksNamespaceTests: XCTestCase {
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
         finish(.success([1, 2, 3, 4, 5]))
-      }.map(\.self, \.count)
-       .recieve {
+      }
+      .map(\.self, \.count)
+      .recieve {
         switch $0 {
         case let .success(value):
           XCTAssertTrue(value == ([1, 2, 3, 4, 5], 5))
@@ -863,8 +864,9 @@ final class TasksNamespaceTests: XCTestCase {
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
         finish(.failure(.providedFailure("Ooops")))
-      }.map(\.self, \.count)
-       .recieve {
+      }
+      .map(\.self, \.count)
+      .recieve {
         switch $0 {
         case let .failure(.providedFailure(error)):
           XCTAssertEqual(error, "Ooops")
@@ -927,6 +929,55 @@ final class TasksNamespaceTests: XCTestCase {
     
     wait(for: [expec1, expec2], timeout: 3)
   }
+  
+  
+//  func testReadme() {
+//    enum NetworkingError: Error {
+//      case clientError(Error)
+//      case serverError(HTTPURLResponse)
+//      case mimeTypeError(String)
+//    }
+//
+//
+//    let task =
+//      BlockProducerTask<Data?, NetworkingError>(
+//        qos: .userInitiated,
+//        priority: .veryHigh
+//      ) { (task, finish) in
+//        guard !task.isCancelled else {
+//          finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+//          return
+//        }
+//
+//        URLSession.shared.dataTask(with: URL(string: "...")!) { (data, response, error) in
+//          if let error = error {
+//            finish(.failure(.providedFailure(.clientError(error))))
+//            return
+//          }
+//
+//          let httpResponse = response as? HTTPURLResponse
+//          if let httpResponse = httpResponse,
+//            (200...299).contains(httpResponse.statusCode)
+//          {
+//            finish(.failure(.providedFailure(.serverError(httpResponse))))
+//            return
+//          }
+//
+//          if let mimeType = httpResponse!.mimeType, mimeType == "application/json" {
+//            finish(.failure(.providedFailure(.mimeTypeError(mimeType))))
+//            return
+//          }
+//
+//          finish(.success(data))
+//        }.resume()
+//      }
+//      .compactMap { $0 }
+//      .decode(type: [Posts].self, decoder: JSONDecoder())
+//      .catch { }
+//      .recieve(on: .main)
+//      .assign(to: \.posts, on: model)
+//
+//  }
   
   // MARK: -
   

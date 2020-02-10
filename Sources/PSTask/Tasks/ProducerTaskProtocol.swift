@@ -28,10 +28,10 @@ public protocol ProducerTaskProtocol: Operation {
   
   // MARK: -
   
-  var conditions: [AnyTaskCondition] { get }
+  var conditions: [AnyCondition] { get }
   
   @discardableResult
-  func addCondition<C: TaskCondition>(_ condition: C) -> Self
+  func addCondition<C: Condition>(_ condition: C) -> Self
   
   // MARK: -
   

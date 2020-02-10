@@ -10,7 +10,7 @@ import Foundation
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Conditions {
   
-  public struct Negated<Condition: TaskCondition> {
+  public struct Negated<Condition: Condition> {
     
     public typealias Failure = Error
     
@@ -31,7 +31,7 @@ extension Conditions.Negated {
 }
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension Conditions.Negated: TaskCondition {
+extension Conditions.Negated: Condition {
   
   public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { condition.dependency(for: task) }
   
@@ -40,7 +40,7 @@ extension Conditions.Negated: TaskCondition {
       if case .success = result {
         completion(.failure(.reverseFailure))
       } else {
-        completion(.success(()))
+        completion(.success)
       }
     }
   }

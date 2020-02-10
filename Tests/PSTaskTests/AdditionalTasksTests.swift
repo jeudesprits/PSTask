@@ -358,3 +358,26 @@ final class AdditionalTasksTests: XCTestCase {
     ("testGatedTask", testGatedTask),
   ]
 }
+
+
+
+final class MyOperation: Operation { override func main() { Thread.sleep(forTimeInterval: 2) } }
+
+let myop = MyOperation()
+
+let task =
+  GatedTask(
+    qos: .userInitiated,
+    priority: .veryHigh,
+    operation: myop
+  ).recieve {
+    switch $0 {
+    case .success:
+      XCTAssertTrue(true)
+      expec.fulfill()
+    case .failure:
+      XCTFail()
+    }
+}
+
+queue.addTask(task)

@@ -10,7 +10,7 @@ import Foundation
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Conditions {
   
-  public struct Silent<Condition: TaskCondition> {
+  public struct Silent<Condition: Condition> {
     
     public typealias Failure = Condition.Failure
     
@@ -25,7 +25,7 @@ extension Conditions {
 }
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension Conditions.Silent: TaskCondition {
+extension Conditions.Silent: Condition {
     
   public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { nil }
   
