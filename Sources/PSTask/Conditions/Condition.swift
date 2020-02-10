@@ -100,7 +100,7 @@ public struct AnyCondition: Condition {
   // MARK: -
 
   @inlinable
-  public init<C: Condition>(_ base: C) { box = _AnyConditionBox(base) }
+  public init<C: Condition>(_ base: C) { self.box = _AnyConditionBox(base) }
 }
 
 // MARK: -
