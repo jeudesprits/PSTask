@@ -14,18 +14,24 @@ internal struct _ConditionEvaluator {
   
   // MARK: -
   
-  static func evaluate<T: ProducerTaskProtocol>(_ conditions: [AnyCondition], for task: T, completion: @escaping ([Result<Void, Error>]) -> Void) {
+  internal static func evaluate<T: ProducerTaskProtocol>(
+    _ conditions: [AnyCondition],
+    for task: T,
+    completion: @escaping ([Result<Void, Error>]) -> Void
+  ) {
     let group = DispatchGroup()
 
     var results = [Result<Void, Error>]()
+    results.reserveCapacity(conditions.count)
     
-    for condition in conditions {
-      group.enter()
-      condition.evaluate(for: task) { (result) in
-        lock.sync { results.append(result) }
-        group.leave()
+    conditions
+      .forEach {
+        group.enter()
+        $0.evaluate(for: task) { (result) in
+          Self.lock.sync { results.append(result) }
+          group.leave()
+        }
       }
-    }
     
     group.notify(queue: .global(qos: .userInitiated)) { completion(results) }
   }

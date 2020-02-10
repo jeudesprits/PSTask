@@ -7,16 +7,16 @@
 
 import Foundation
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Conditions {
   
-  public struct MutuallyExclusive<T>: Condition {
+  public struct MutuallyExclusive<Category>: Condition {
     
     public typealias Failure = Never
     
     // MARK: -
     
-    public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { nil }
+    public func dependency<T: ProducerTaskProtocol>(for task: T) -> NonFailTask? { nil }
     
     public func evaluate<T: ProducerTaskProtocol>(for task: T, completion: @escaping (Result<Void, Failure>) -> Void) {
       completion(.success(()))

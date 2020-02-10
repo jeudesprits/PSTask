@@ -7,7 +7,7 @@
 
 import Foundation
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Observers {
   
   public struct Timeout {
@@ -20,12 +20,12 @@ extension Observers {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Observers.Timeout: Observer {
   
   public func taskDidStart<T: ProducerTaskProtocol>(_ task: T) {
     // When the operation starts, queue up a block to cause it to time out.
-    DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
+    DispatchQueue.global().asyncAfter(deadline: .now() + self.timeout) {
       // Cancel the operation if it hasn't finished and hasn't already been cancelled.
       if !task.isFinished && !task.isCancelled { task.cancel() }
     }

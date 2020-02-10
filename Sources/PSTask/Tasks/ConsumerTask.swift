@@ -8,20 +8,20 @@
 import Foundation
 import SwiftUI
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias ConsumerTask<Input, Failure: Error> = ConsumerProducerTask<Input, Void, Failure>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailConsumerTask<Input> = ConsumerTask<Input, Never>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public enum ConsumerProducerTaskError: Error { case producingFailure }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Output, Failure>, ConsumerProducerTaskProtocol {
   
   public typealias Input = Input
@@ -63,5 +63,5 @@ open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Out
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailConsumerProducerTask<Input, Output> = ConsumerProducerTask<Input, Output, Never>

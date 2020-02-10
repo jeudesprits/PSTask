@@ -11,7 +11,7 @@ internal func _abstract(file: StaticString = #file, line: UInt = #line) -> Never
   fatalError("Method must be overridden.", file: file, line: line)
 }
 
-//@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+//@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 //open class PSAbstractOperation: Operation {
 //
 //  private let stateLock = PSUnfairLock()

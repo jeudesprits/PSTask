@@ -8,17 +8,17 @@
 import Foundation
 import PSLock
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias GroupConsumerTask<Input, Failure: Error> = GroupConsumerProducerTask<Input, Void, Failure>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailGroupConsumerTask<Input> = GroupConsumerTask<Input, Never>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
   ConsumerProducerTask<Input, Output, Failure>, TaskQueueContainable
 {
@@ -557,7 +557,7 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
    }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension GroupConsumerProducerTask: TaskQueueDelegate {
   
   public func taskQueue<T: ProducerTaskProtocol>(_ taskQueue: TaskQueue, willAdd task: T) {
@@ -592,5 +592,5 @@ extension GroupConsumerProducerTask: TaskQueueDelegate {
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailGroupConsumerProducerTask<Input, Output> = GroupConsumerProducerTask<Input, Output, Never>

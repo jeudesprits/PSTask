@@ -7,7 +7,7 @@
 
 import Foundation
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public protocol TaskQueueDelegate: AnyObject {
   
   func taskQueue<T: ProducerTaskProtocol>(_ taskQueue: TaskQueue, willAdd task: T)
@@ -15,7 +15,7 @@ public protocol TaskQueueDelegate: AnyObject {
   func taskQueue<T: ProducerTaskProtocol>(_ taskQueue: TaskQueue, didFinish task: T)
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension TaskQueueDelegate {
   
   public func taskQueue<T: ProducerTaskProtocol>(_ taskQueue: TaskQueue, willAdd task: T) {}
@@ -25,7 +25,7 @@ extension TaskQueueDelegate {
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public protocol TaskQueueContainable: Operation {
   
   var innerQueue: TaskQueue { get }
@@ -55,7 +55,7 @@ extension _TaskQueueDelegateObserver: Observer {
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class TaskQueue: OperationQueue {
   
   open weak var delegate: TaskQueueDelegate?

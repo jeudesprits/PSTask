@@ -8,10 +8,10 @@
 import Foundation
 import PSLock
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias Task<Failure: Error> = ProducerTask<Void, Failure>
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Result where Success == Void {
   
   public static var success: Self { .success(()) }
@@ -19,16 +19,16 @@ extension Result where Success == Void {
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailTask = ProducerTask<Void, Never>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public enum ProducerTaskError: Error { case conditionsFailure, executionFailure }
 
 // TODO: - Добавить поддержку `Identifiable`.
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol {
   
   public typealias Output = Output
@@ -349,7 +349,7 @@ extension ProducerTask._State: Comparable {
   internal static func == (lhs: Self, rhs: Self) -> Bool { lhs.rawValue == rhs.rawValue }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask {
   
   @inlinable
@@ -388,7 +388,7 @@ extension ProducerTask {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask where Failure == Never {
   
   @inlinable
@@ -399,7 +399,7 @@ extension ProducerTask where Failure == Never {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask {
   
   @inlinable
@@ -429,7 +429,7 @@ extension ProducerTask {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask where Output == Void {
   
   @inlinable
@@ -440,7 +440,7 @@ extension ProducerTask where Output == Void {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask {
 
   @inlinable
@@ -514,7 +514,7 @@ extension ProducerTask {
    }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask {
   
   @inlinable
@@ -541,7 +541,7 @@ extension ProducerTask {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask where Output == Data {
   
   @inlinable
@@ -553,7 +553,7 @@ extension ProducerTask where Output == Data {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask where Output: Encodable {
   
   @inlinable
@@ -564,7 +564,7 @@ extension ProducerTask where Output: Encodable {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask {
   
   @inlinable
@@ -592,7 +592,7 @@ extension ProducerTask {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask where Output == Void  {
  
   @inlinable
@@ -603,7 +603,7 @@ extension ProducerTask where Output == Void  {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask where Failure == Never  {
    
   @inlinable
@@ -614,7 +614,7 @@ extension ProducerTask where Failure == Never  {
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask {
  
   @inlinable
@@ -639,5 +639,5 @@ extension ProducerTask {
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailProducerTask<Output> = ProducerTask<Output, Never>

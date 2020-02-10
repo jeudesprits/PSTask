@@ -8,17 +8,17 @@
 import Foundation
 import PSLock
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias GroupTask<Failure: Error> = GroupProducerTask<Void, Failure>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailGroupTask = GroupTask<Never>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failure>, TaskQueueContainable {
   
   public let innerQueue: TaskQueue
@@ -543,7 +543,7 @@ open class GroupProducerTask<Output, Failure: Error>: ProducerTask<Output, Failu
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension GroupProducerTask: TaskQueueDelegate {
   
   public func taskQueue<T: ProducerTaskProtocol>(_ taskQueue: TaskQueue, willAdd task: T) {
@@ -578,5 +578,5 @@ extension GroupProducerTask: TaskQueueDelegate {
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailGroupProducerTask<Output> = GroupProducerTask<Output, Never>

@@ -7,36 +7,38 @@
 
 import Foundation
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Conditions {
   
-  public struct Negated<Condition: Condition> {
+  public struct Negated<Base: Condition> {
     
     public typealias Failure = Error
     
     // MARK: -
     
-    public let condition: Condition
+    public let condition: Base
     
     // MARK: -
     
-    public init(condition: Condition) { self.condition = condition }
+    public init(_ condition: Base) { self.condition = condition }
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Conditions.Negated {
   
   public enum Error: Swift.Error { case reverseFailure }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Conditions.Negated: Condition {
   
-  public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { condition.dependency(for: task) }
+  public func dependency<T: ProducerTaskProtocol>(for task: T) -> NonFailTask? {
+    self.condition.dependency(for: task)
+  }
   
   public func evaluate<T: ProducerTaskProtocol>(for task: T, completion: @escaping (Result<Void, Failure>) -> Void)  {
-    condition.evaluate(for: task) { (result) in
+    self.condition.evaluate(for: task) { (result) in
       if case .success = result {
         completion(.failure(.reverseFailure))
       } else {

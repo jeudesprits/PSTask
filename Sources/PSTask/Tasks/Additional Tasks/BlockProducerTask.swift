@@ -7,17 +7,17 @@
 
 import Foundation
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias BlockTask<Failure: Error> = BlockProducerTask<Void, Failure>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailBlockTask = BlockTask<Never>
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public final class BlockProducerTask<Output, Failure: Error>: ProducerTask<Output, Failure> {
   
   public typealias Block = (BlockProducerTask, @escaping (Produced) -> Void) -> Void
@@ -43,5 +43,5 @@ public final class BlockProducerTask<Output, Failure: Error>: ProducerTask<Outpu
 
 // MARK: -
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailBlockProducerTask<Output> = BlockProducerTask<Output, Never>

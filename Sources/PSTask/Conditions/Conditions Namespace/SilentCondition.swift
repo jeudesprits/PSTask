@@ -7,29 +7,29 @@
 
 import Foundation
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Conditions {
   
-  public struct Silent<Condition: Condition> {
+  public struct Silent<Base: Condition> {
     
-    public typealias Failure = Condition.Failure
-    
-    // MARK: -
-    
-    public let condition: Condition
+    public typealias Failure = Base.Failure
     
     // MARK: -
     
-    public init(condition: Condition) { self.condition = condition }
+    public let condition: Base
+    
+    // MARK: -
+    
+    public init(condition: Base) { self.condition = condition }
   }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension Conditions.Silent: Condition {
     
-  public func dependency<T: ProducerTaskProtocol>(for task: T) -> Operation? { nil }
+  public func dependency<T: ProducerTaskProtocol>(for task: T) -> NonFailTask? { nil }
   
   public func evaluate<T: ProducerTaskProtocol>(for task: T, completion: @escaping (Result<Void, Failure>) -> Void) {
-    condition.evaluate(for: task, completion: completion)
+    self.condition.evaluate(for: task, completion: completion)
   }
 }
