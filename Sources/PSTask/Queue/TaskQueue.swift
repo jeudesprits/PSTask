@@ -73,16 +73,18 @@ open class TaskQueue: OperationQueue {
   // MARK: -
   
   @available(*, unavailable)
-  open override func addOperation(_ operation: Operation) {}
+  open override func addOperation(_ operation: Operation) { super.addOperation(operation) }
   
   @available(*, unavailable)
-  open override func addOperations(_ operations: [Operation], waitUntilFinished wait: Bool) {}
+  open override func addOperations(_ operations: [Operation], waitUntilFinished wait: Bool) {
+    super.addOperations(operations, waitUntilFinished: wait)
+  }
   
   @available(*, unavailable)
-  open override func addOperation(_ block: @escaping () -> Void) {}
+  open override func addOperation(_ block: @escaping () -> Void) { super.addOperation(block) }
   
   @available(*, unavailable)
-  open override func addBarrierBlock(_ barrier: @escaping () -> Void) {}
+  open override func addBarrierBlock(_ barrier: @escaping () -> Void) { super.addBarrierBlock(barrier) }
   
   open func addTask<T: ProducerTaskProtocol>(_ task: T) {
     // Set up a observer to invoke the `OperationQueueDelegate` methods.
@@ -97,6 +99,22 @@ open class TaskQueue: OperationQueue {
         task.addDependency($0)
         super.addOperation($0)
       }
+    
+    let categories =
+      task
+        .conditions
+        .compactMap { (condition) -> String? in
+          let describing = String(describing: type(of: condition.box))
+          guard describing.contains("MutuallyExclusive") else { return nil }
+          let leftIndex = describing.index(describing.startIndex, offsetBy: 17)
+          let rightIndex = describing.index(describing.endIndex, offsetBy: -2)
+          return String(describing[leftIndex...rightIndex])
+        }
+    
+    if !categories.isEmpty {
+      _ConditionMutuallyExclusivityController.shared.add(task, forCategories: categories)
+      task.addObserver(_ConditionMutuallyExclusivityObserver(categories: categories))
+    }
     
     // Indicate to the operation that we've finished our extra work on it
     // and it's now it a state where it can proceed with evaluating conditions, if appropriate.
@@ -118,21 +136,21 @@ open class TaskQueue: OperationQueue {
   // MARK: -
   
   @available(*, unavailable)
-  public final override func waitUntilAllOperationsAreFinished() {}
+  open override func waitUntilAllOperationsAreFinished() { super.waitUntilAllOperationsAreFinished() }
   
-  public final func waitUntilAllTasksAreFinished() { super.waitUntilAllOperationsAreFinished() }
+  open func waitUntilAllTasksAreFinished() { super.waitUntilAllOperationsAreFinished() }
   
   // MARK: -
   
   @available(*, unavailable)
-  open override func cancelAllOperations() {}
+  open override func cancelAllOperations() { super.cancelAllOperations() }
   
   open func cancelAllTasks() { super.cancelAllOperations() }
   
   // MARK: -
   
   @available(*, unavailable)
-  public override init() {}
+  public override init() { super.init() }
   
   @inlinable
   public init(

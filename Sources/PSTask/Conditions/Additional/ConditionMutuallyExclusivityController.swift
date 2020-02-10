@@ -30,7 +30,10 @@ extension _ConditionMutuallyExclusivityController {
   internal func add(_ operation: Operation, forCategories categories: [String]) {
     func addingManage(with operation: Operation, forCategory category: String) {
       var operationsWithThisCategory = self.operations[category] ?? []
-      if let last = operationsWithThisCategory.last { operation.addDependency(last) }
+      if let last = operationsWithThisCategory.last {
+        operation.addDependency(last)
+        
+      }
       operationsWithThisCategory.append(operation)
       self.operations[category] = operationsWithThisCategory
     }
@@ -50,5 +53,23 @@ extension _ConditionMutuallyExclusivityController {
     }
     
     self.manageQueue.async { categories.forEach { removeManage(with: operation, forCategory: $0) } }
+  }
+}
+
+// MARK: -
+
+internal struct _ConditionMutuallyExclusivityObserver {
+  
+  private let categories: [String]
+  
+  // MARK: -
+  
+  internal init(categories: [String]) { self.categories = categories }
+}
+
+extension _ConditionMutuallyExclusivityObserver: Observer {
+  
+  internal func taskDidFinish<T: ProducerTaskProtocol>(_ task: T) {
+    _ConditionMutuallyExclusivityController.shared.remove(task, forCategories: self.categories)
   }
 }
