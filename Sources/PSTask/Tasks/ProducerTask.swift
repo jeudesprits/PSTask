@@ -90,7 +90,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
 
     state = .evaluatingConditions
 
-    _ConditionEvaluator.evaluate(conditions, for: self) { (results) in
+    _ConditionEvaluator.shared.evaluate(conditions, for: self) { (results) in
       let errors = results
         .compactMap { (result) -> Swift.Error? in
           if case let .failure(error) = result {

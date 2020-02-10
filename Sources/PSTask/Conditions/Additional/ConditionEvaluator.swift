@@ -8,13 +8,22 @@
 import Foundation
 import PSLock
 
-internal struct _ConditionEvaluator {
+internal final class _ConditionEvaluator {
   
-  private static let lock = UnfairLock()
+  internal static let shared = _ConditionEvaluator()
   
   // MARK: -
   
-  internal static func evaluate<T: ProducerTaskProtocol>(
+  private let lock = UnfairLock()
+  
+  // MARK: -
+  
+  private init() {}
+}
+
+extension _ConditionEvaluator {
+  
+  internal func evaluate<T: ProducerTaskProtocol>(
     _ conditions: [AnyCondition],
     for task: T,
     completion: @escaping ([Result<Void, Error>]) -> Void
@@ -28,7 +37,7 @@ internal struct _ConditionEvaluator {
       .forEach {
         group.enter()
         $0.evaluate(for: task) { (result) in
-          Self.lock.sync { results.append(result) }
+          self.lock.sync { results.append(result) }
           group.leave()
         }
       }
