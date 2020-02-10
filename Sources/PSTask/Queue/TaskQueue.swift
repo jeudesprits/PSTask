@@ -100,6 +100,8 @@ open class TaskQueue: OperationQueue {
         super.addOperation($0)
       }
     
+    // With condition dependencies added, we can now see if this needs
+    // dependencies to enforce mutual exclusivity.
     let categories =
       task
         .conditions
@@ -112,6 +114,7 @@ open class TaskQueue: OperationQueue {
         }
     
     if !categories.isEmpty {
+      // Set up the mutual exclusivity dependencies.
       _ConditionMutuallyExclusivityController.shared.add(task, forCategories: categories)
       task.addObserver(_ConditionMutuallyExclusivityObserver(categories: categories))
     }
