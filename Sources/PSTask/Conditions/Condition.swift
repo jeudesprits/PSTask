@@ -7,7 +7,7 @@
 
 import Foundation
 
-@available(iOS 13.0, macOS 10.15, watchOS 6.0,  tvOS 13.0, macCatalyst 13.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public protocol Condition {
   
   associatedtype Failure: Error
@@ -77,7 +77,7 @@ internal final class _AnyConditionBox<Base: Condition>: _AnyConditionBaseBox<Err
   deinit {}
 }
 
-@available(iOS 13.0, macOS 10.15, watchOS 6.0,  tvOS 13.0, macCatalyst 13.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public struct AnyCondition: Condition {
 
   public typealias Failure = Error
@@ -105,5 +105,5 @@ public struct AnyCondition: Condition {
 
 // MARK: -
 
-@available(iOS 13.0, macOS 10.15, watchOS 6.0,  tvOS 13.0, macCatalyst 13.0, *)
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public enum Conditions {}
