@@ -27,6 +27,12 @@ public typealias NonFailTask = ProducerTask<Void, Never>
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public enum ProducerTaskError: Error { case conditionsFailure(errors: [Error]), executionFailure }
 
+@inline(never)
+@usableFromInline
+internal func _abstract(function: StaticString = #function, file: StaticString = #file, line: UInt = #line) -> Never {
+  fatalError("\(function) must be overridden.", file: file, line: line)
+}
+
 // TODO: - Добавить поддержку `Identifiable`.
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol {
