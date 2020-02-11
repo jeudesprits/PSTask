@@ -49,7 +49,7 @@ extension _TaskQueueDelegateObserver: Observer {
   }
   
   internal func taskDidFinish<T: ProducerTaskProtocol>(_ task: T) {
-    self.taskQueue.delegate?.taskQueue(taskQueue, didFinish: task)
+    self.taskQueue.delegate?.taskQueue(self.taskQueue, didFinish: task)
   }
 }
 
