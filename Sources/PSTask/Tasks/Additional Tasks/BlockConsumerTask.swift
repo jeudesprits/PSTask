@@ -27,7 +27,7 @@ public final class BlockConsumerProducerTask<Input, Output, Failure: Error>: Con
   // MARK: -
   
   public override func execute(with consumed: Consumed) {
-    block(self, consumed) { (produced) in self.finish(with: produced) }
+    self.block(self, consumed) { (produced) in self.finish(with: produced) }
   }
   
   // MARK: -

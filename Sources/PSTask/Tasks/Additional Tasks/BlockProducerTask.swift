@@ -26,7 +26,7 @@ public final class BlockProducerTask<Output, Failure: Error>: ProducerTask<Outpu
   
   // MARK: -
   
-  public override func execute() { block(self) { (produced) in self.finish(with: produced) } }
+  public override func execute() { self.block(self) { (produced) in self.finish(with: produced) } }
   
   // MARK: -
   

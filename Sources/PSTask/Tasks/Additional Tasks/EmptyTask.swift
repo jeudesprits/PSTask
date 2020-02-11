@@ -10,5 +10,5 @@ import Foundation
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public final class EmptyTask: NonFailTask {
   
-  public override func execute() { finish(with: .success) }
+  public override func execute() { self.finish(with: .success) }
 }

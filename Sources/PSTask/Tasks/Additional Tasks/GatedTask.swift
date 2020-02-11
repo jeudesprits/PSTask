@@ -21,29 +21,29 @@ public final class GatedTask: NonFailTask {
   
   public override func execute() {
     guard !isCancelled else {
-      finish(with: .failure(.internal(ProducerTaskError.executionFailure)))
+      self.finish(with: .failure(.internal(ProducerTaskError.executionFailure)))
       return
     }
     
-    isReadyObserver =
-      operation.observe(\.isReady, options: [.initial, .new]) { (operation, change) in
+    self.isReadyObserver =
+      self.operation.observe(\.isReady, options: [.initial, .new]) { (operation, change) in
         guard let isReady = change.newValue else { return }
         if isReady { operation.start() }
       }
-    isCancelObserver =
-      operation.observe(\.isCancelled, options: [.initial, .new]) { [unowned self] (_, change) in
+    self.isCancelObserver =
+      self.operation.observe(\.isCancelled, options: [.initial, .new]) { [unowned self] (_, change) in
         guard let isCancelled = change.newValue else { return }
         if isCancelled { self.finish(with: .failure(.internal(ProducerTaskError.executionFailure))) }
       }
-    isFinishObserver =
-      operation.observe(\.isFinished, options: [.initial, .new]) { [unowned self] (operation, change) in
+    self.isFinishObserver =
+      self.operation.observe(\.isFinished, options: [.initial, .new]) { [unowned self] (operation, change) in
         guard let isFinished = change.newValue else { return }
         if isFinished && !operation.isCancelled { self.finish(with: .success) }
       }
   }
   
   public override func cancel() {
-    operation.cancel()
+    self.operation.cancel()
     super.cancel()
   }
   
