@@ -47,7 +47,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   private let stateLock = UnfairLock()
   private var _state = _State.initialized
   internal private(set) var state: _State {
-    get { self.stateLock.sync { _state } }
+    get { self.stateLock.sync { self._state } }
     set(newState) {
       // It's important to note that the KVO notifications are NOT called from inside
       // the lock. If they were, the app would deadlock, because in the middle of
@@ -105,7 +105,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
           }
         }
 
-      if !errors.isEmpty { self.produced = .failure(.internal(Error.conditionsFailure)) }
+      if !errors.isEmpty { self.produced = .failure(.internal(Error.conditionsFailure(errors: errors))) }
 
       self.state = .ready
     }
@@ -171,7 +171,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
       self.observers.forEach { $0.taskDidStart(self) }
       self.execute()
     } else {
-      self.finish(with: self.produced ?? .failure(.internal(Error.conditionsFailure)))
+      self.finish(with: self.produced ?? .failure(.internal(Error.executionFailure)))
     }
   }
   
@@ -340,7 +340,7 @@ extension ProducerTask._State: Comparable {
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask {
   
-  public enum ProducerTaskError: Swift.Error { case conditionsFailure, executionFailure }
+  public enum ProducerTaskError: Swift.Error { case conditionsFailure(errors: [Swift.Error]), executionFailure }
   
   public typealias Error = ProducerTaskError
 }
