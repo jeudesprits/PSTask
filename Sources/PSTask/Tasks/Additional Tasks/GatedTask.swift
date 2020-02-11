@@ -20,7 +20,7 @@ public final class GatedTask: NonFailTask {
   // MARK: -
   
   public override func execute() {
-    guard !isCancelled else {
+    guard !self.isCancelled else {
       self.finish(with: .failure(.internal(ProducerTaskError.executionFailure)))
       return
     }
