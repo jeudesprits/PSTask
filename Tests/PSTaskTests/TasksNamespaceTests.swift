@@ -930,29 +930,6 @@ final class TasksNamespaceTests: XCTestCase {
     self.wait(for: [expec1, expec2], timeout: 3)
   }
   
-  func test () {
-    
-    let t1 = NonFailBlockTask { (_, finish) in
-      Thread.sleep(forTimeInterval: 2)
-      print("1")
-      finish(.success)
-    }
-    
-    let t2 = NonFailBlockTask { (_, finish) in
-      print("2")
-      finish(.success)
-    }
-    
-    
-    t1.addCondition(Conditions.MutuallyExclusive<String>())
-    t2.addCondition(Conditions.MutuallyExclusive<String>())
-    
-    self.queue.addTask(t1)
-    self.queue.addTask(t2)
-    self.queue.waitUntilAllTasksAreFinished()
-  }
-  
-  
   // MARK: -
   
   static var allTests = [
