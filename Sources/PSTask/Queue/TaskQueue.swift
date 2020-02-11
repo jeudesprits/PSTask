@@ -83,9 +83,6 @@ open class TaskQueue: OperationQueue {
   @available(*, unavailable)
   open override func addOperation(_ block: @escaping () -> Void) { super.addOperation(block) }
   
-  @available(*, unavailable)
-  open override func addBarrierBlock(_ barrier: @escaping () -> Void) { super.addBarrierBlock(barrier) }
-  
   open func addTask<T: ProducerTaskProtocol>(_ task: T) {
     // Set up a observer to invoke the `OperationQueueDelegate` methods.
     task.addObserver(_TaskQueueDelegateObserver(taskQueue: self))
@@ -126,9 +123,9 @@ open class TaskQueue: OperationQueue {
     DispatchQueue.global().asyncAfter(deadline: deadline) { self.addTask(task) }
   }
 
-  open func addBlockTask(_ block: @escaping () -> Void) { super.addOperation(block) }
+  open func addBlock(_ block: @escaping () -> Void) { super.addOperation(block) }
   
-  open func addBarrierBlockTask(_ block: @escaping () -> Void) { super.addBarrierBlock(block) }
+  open override func addBarrierBlock(_ block: @escaping () -> Void) { super.addBarrierBlock(block) }
   
   // MARK: -
   
