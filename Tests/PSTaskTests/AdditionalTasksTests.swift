@@ -10,7 +10,7 @@ import XCTest
 
 final class AdditionalTasksTests: XCTestCase {
   
-  private let queue = TaskQueue(name: "com.PSTask.AdditionalTasksTests", qos: .userInitiated)
+  private let queue = TaskQueue(name: "com.pstask.additional-tasks-tests", qos: .userInitiated)
   
   // MARK: -
   
@@ -35,9 +35,9 @@ final class AdditionalTasksTests: XCTestCase {
         expec.fulfill()
       }
     
-    queue.addTask(task)
+    self.queue.addTask(task)
     
-    wait(for: [expec], timeout: 2)
+    self.wait(for: [expec], timeout: 2)
   }
   
   func testBlockTask() {
@@ -61,9 +61,9 @@ final class AdditionalTasksTests: XCTestCase {
         expec.fulfill()
     }
     
-    queue.addTask(task)
+    self.queue.addTask(task)
     
-    wait(for: [expec], timeout: 2)
+    self.wait(for: [expec], timeout: 2)
   }
   
   func testNonFailBlockTask() {
@@ -87,9 +87,9 @@ final class AdditionalTasksTests: XCTestCase {
         expec.fulfill()
       }
     
-    queue.addTask(task)
+    self.queue.addTask(task)
     
-    wait(for: [expec], timeout: 2)
+    self.wait(for: [expec], timeout: 2)
   }
   
   func testNonFailBlockProducerTask() {
@@ -113,9 +113,9 @@ final class AdditionalTasksTests: XCTestCase {
         expec.fulfill()
     }
     
-    queue.addTask(task)
+    self.queue.addTask(task)
     
-    wait(for: [expec], timeout: 2)
+    self.wait(for: [expec], timeout: 2)
   }
   
   // MARK: -
@@ -157,10 +157,10 @@ final class AdditionalTasksTests: XCTestCase {
         }
       }
     
-    queue.addTask(producerTask)
-    queue.addTask(consumerTask)
+    self.queue.addTask(producerTask)
+    self.queue.addTask(consumerTask)
     
-    wait(for: [expec], timeout: 3)
+    self.wait(for: [expec], timeout: 3)
   }
   
   func testBlockConsumerTask() {
@@ -200,10 +200,10 @@ final class AdditionalTasksTests: XCTestCase {
         }
     }
     
-    queue.addTask(producerTask)
-    queue.addTask(consumerTask)
+    self.queue.addTask(producerTask)
+    self.queue.addTask(consumerTask)
     
-    wait(for: [expec], timeout: 3)
+    self.wait(for: [expec], timeout: 3)
   }
   
   func testNonFailBlockConsumerTask() {
@@ -243,10 +243,10 @@ final class AdditionalTasksTests: XCTestCase {
         }
     }
     
-    queue.addTask(producerTask)
-    queue.addTask(consumerTask)
+    self.queue.addTask(producerTask)
+    self.queue.addTask(consumerTask)
     
-    wait(for: [expec], timeout: 3)
+    self.wait(for: [expec], timeout: 3)
   }
   
   func testNonFailBlockConsumerProducerTask() {
@@ -286,10 +286,10 @@ final class AdditionalTasksTests: XCTestCase {
         }
     }
     
-    queue.addTask(producerTask)
-    queue.addTask(consumerTask)
+    self.queue.addTask(producerTask)
+    self.queue.addTask(consumerTask)
     
-    wait(for: [expec], timeout: 3)
+    self.wait(for: [expec], timeout: 3)
   }
   
   // MARK: -
@@ -309,9 +309,9 @@ final class AdditionalTasksTests: XCTestCase {
           }
         }
     
-    queue.addTask(task)
+    self.queue.addTask(task)
     
-    wait(for: [expec], timeout: 1)
+    self.wait(for: [expec], timeout: 1)
   }
   
   // MARK: -
@@ -338,9 +338,9 @@ final class AdditionalTasksTests: XCTestCase {
         }
       }
     
-    queue.addTask(task)
+    self.queue.addTask(task)
 
-    wait(for: [expec], timeout: 3)
+    self.wait(for: [expec], timeout: 3)
   }
   
   // MARK: -

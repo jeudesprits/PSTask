@@ -97,6 +97,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
    }
@@ -116,6 +118,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
      self.innerQueue.addTask(tasks.2)
@@ -136,6 +140,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
      self.innerQueue.addTask(tasks.2)
@@ -157,6 +163,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
      self.innerQueue.addTask(tasks.2)
@@ -179,6 +187,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
      self.innerQueue.addTask(tasks.2)
@@ -202,6 +212,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
      self.innerQueue.addTask(tasks.2)
@@ -226,6 +238,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
      self.innerQueue.addTask(tasks.2)
@@ -251,6 +265,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
      self.innerQueue.addTask(tasks.2)
@@ -277,6 +293,8 @@ open class GroupConsumerProducerTask<Input, Output, Failure: Error>:
        startSuspended: true
      )
      super.init(name: name, qos: qos, priority: priority, producing: producing)
+     self.innerQueue.delegate = self
+     self.innerQueue.addTask(self.startingTask)
      self.innerQueue.addTask(tasks.0)
      self.innerQueue.addTask(tasks.1)
      self.innerQueue.addTask(tasks.2)
