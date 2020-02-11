@@ -58,7 +58,7 @@ extension Tasks {
           finish(.success)
       }
       
-      addTask(transform)
+      self.addTask(transform)
     }
   }
 }
