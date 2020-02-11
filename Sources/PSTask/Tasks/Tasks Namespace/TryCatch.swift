@@ -36,7 +36,7 @@ extension Tasks {
           producing: from
         ) { [unowned self] (task, consumed, finish) in
             guard !task.isCancelled else {
-              finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+              finish(.failure(.internal(ProducerTaskError.executionFailure)))
               return
             }
             
@@ -44,20 +44,20 @@ extension Tasks {
             case let .success(value):
               self.finish(with: .success(value))
               
-            case let .failure(.internalFailure(error)):
-              self.finished(with: .failure(.internalFailure(error)))
+            case let .failure(.internal(error)):
+              self.finished(with: .failure(.internal(error)))
               
-            case let .failure(.providedFailure(error)):
+            case let .failure(.provided(error)):
               do {
                 let newTask = try handler(error)
                   .recieve { (produced) in
                     switch produced {
                     case let .success(value):
                       self.finish(with: .success(value))
-                    case let .failure(.internalFailure(error)):
-                      self.finish(with: .failure(.internalFailure(error)))
-                    case let .failure(.providedFailure(error)):
-                      self.finish(with: .failure(.providedFailure(error)))
+                    case let .failure(.internal(error)):
+                      self.finish(with: .failure(.internal(error)))
+                    case let .failure(.provided(error)):
+                      self.finish(with: .failure(.provided(error)))
                     }
                   }
                 newTask.name = "\(name).Produced"
@@ -68,7 +68,7 @@ extension Tasks {
                 }
                 task.produce(new: newTask)
               } catch {
-                self.finish(with: .failure(.providedFailure(error)))
+                self.finish(with: .failure(.provided(error)))
               }
             }
             

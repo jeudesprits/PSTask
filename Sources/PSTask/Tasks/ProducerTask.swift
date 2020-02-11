@@ -22,11 +22,6 @@ extension Result where Success == Void {
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailTask = ProducerTask<Void, Never>
 
-// MARK: -
-
-@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
-public enum ProducerTaskError: Error { case conditionsFailure, executionFailure }
-
 // TODO: - Добавить поддержку `Identifiable`.
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol {
@@ -39,20 +34,20 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   private static var keyPathsForValuesAffectings: Set<String> { ["state"] }
   
   @objc
-  private static func keyPathsForValuesAffectingIsReady() -> Set<String> { keyPathsForValuesAffectings }
+  private static func keyPathsForValuesAffectingIsReady() -> Set<String> { Self.keyPathsForValuesAffectings }
   
   @objc
-  private static func keyPathsForValuesAffectingIsExecuting() -> Set<String> { keyPathsForValuesAffectings }
+  private static func keyPathsForValuesAffectingIsExecuting() -> Set<String> { Self.keyPathsForValuesAffectings }
   
   @objc
-  private static func keyPathsForValuesAffectingIsFinished() -> Set<String> { keyPathsForValuesAffectings }
+  private static func keyPathsForValuesAffectingIsFinished() -> Set<String> { Self.keyPathsForValuesAffectings }
   
   // MARK: -
   
   private let stateLock = UnfairLock()
   private var _state = _State.initialized
   internal private(set) var state: _State {
-    get { stateLock.sync { _state } }
+    get { self.stateLock.sync { _state } }
     set(newState) {
       // It's important to note that the KVO notifications are NOT called from inside
       // the lock. If they were, the app would deadlock, because in the middle of
@@ -61,10 +56,10 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
       // acquire the lock, then we'd be stuck waiting on our own lock. It's the
       // classic definition of deadlock.
       willChangeValue(forKey: "state")
-      stateLock.sync {
-        guard _state != .finished else { return }
-        precondition(_state.canTransition(to: newState), "Performing invalid state transition.")
-        _state = newState
+      self.stateLock.sync {
+        guard self._state != .finished else { return }
+        precondition(self._state.canTransition(to: newState), "Performing invalid state transition.")
+        self._state = newState
       }
       didChangeValue(forKey: "state")
     }
@@ -76,19 +71,29 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   // MARK: -
   
+  open private(set) var mutuallyExclusiveConditions = [String : AnyCondition]()
+  
   open private(set) var conditions = [AnyCondition]()
   
   @discardableResult
   open func addCondition<C: Condition>(_ condition: C) -> Self {
-    precondition(state < .pending, "Cannot modify conditions after execution has begun.")
-    conditions.append(.init(condition))
+    precondition(self.state < .pending, "Cannot modify conditions after execution has begun.")
+    self.conditions.append(.init(condition))
+    return self
+  }
+  
+  @discardableResult
+  open func addCondition<T>(_ condition: Conditions.MutuallyExclusive<T>) -> Self {
+    precondition(self.state < .pending, "Cannot modify conditions after execution has begun.")
+    self.mutuallyExclusiveConditions[String(describing: T.self)] = .init(condition)
+    self.conditions.append(.init(condition))
     return self
   }
   
   private func evaluateConditions() {
-    precondition(state == .pending, "\(#function) was called out-of-order.")
+    precondition(self.state == .pending, "\(#function) was called out-of-order.")
 
-    state = .evaluatingConditions
+    self.state = .evaluatingConditions
 
     _ConditionEvaluator.shared.evaluate(conditions, for: self) { (results) in
       let errors = results
@@ -100,7 +105,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
           }
         }
 
-      if !errors.isEmpty { self.produced = .failure(.internalFailure(ProducerTaskError.conditionsFailure)) }
+      if !errors.isEmpty { self.produced = .failure(.internal(Error.conditionsFailure)) }
 
       self.state = .ready
     }
@@ -112,61 +117,61 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   @discardableResult
   open func addObserver<O: Observer>(_ observer: O) -> Self {
-    precondition(state < .executing, "Cannot modify observers after execution has begun.")
-    observers.append(observer)
+    precondition(self.state < .executing, "Cannot modify observers after execution has begun.")
+    self.observers.append(observer)
     return self
   }
   
   // MARK: -
   
   open override var isReady: Bool {
-    switch state {
+    switch self.state {
     case .initialized:
-      if isCancelled { state = .pending }
+      if self.isCancelled { self.state = .pending }
       return false
     case .pending:
-      evaluateConditions()
+      self.evaluateConditions()
       // Until conditions have been evaluated, `isReady` returns false
       return false
     case .ready:
-      return super.isReady || isCancelled
+      return super.isReady || self.isCancelled
     default:
       return false
     }
   }
   
-  open override var isExecuting: Bool { state == .executing }
+  open override var isExecuting: Bool { self.state == .executing }
   
-  open override var isFinished: Bool { state == .finished }
+  open override var isFinished: Bool { self.state == .finished }
   
   // MARK: -
   
   open func willEnqueue() {
-    precondition(state != .ready, "You should not call the `cancel()` method before adding to the queue.")
-    state = .pending
+    precondition(self.state != .ready, "You should not call the `cancel()` method before adding to the queue.")
+    self.state = .pending
   }
   
   open override func start() {
     // `Operation.start()` method contains important logic that shouldn't be bypassed.
     super.start()
     // If the operation has been cancelled, we still need to enter the `.finished` state.
-    if isCancelled { finish(with: produced ?? .failure(.internalFailure(ProducerTaskError.executionFailure))) }
+    if self.isCancelled { self.finish(with: self.produced ?? .failure(.internal(Error.executionFailure))) }
   }
   
   open override func cancel() {
     super.cancel()
-    observers.forEach { $0.taskDidCancel(self) }
+    self.observers.forEach { $0.taskDidCancel(self) }
   }
   
   open override func main() {
-    precondition(state == .ready, "This task must be performed on an task queue.")
+    precondition(self.state == .ready, "This task must be performed on an task queue.")
     
-    if produced == nil && !isCancelled {
-      state = .executing
-      observers.forEach { $0.taskDidStart(self) }
-      execute()
+    if self.produced == nil && !self.isCancelled {
+      self.state = .executing
+      self.observers.forEach { $0.taskDidStart(self) }
+      self.execute()
     } else {
-      finish(with: produced ?? .failure(.internalFailure(ProducerTaskError.conditionsFailure)))
+      self.finish(with: self.produced ?? .failure(.internal(Error.conditionsFailure)))
     }
   }
   
@@ -176,29 +181,29 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   // MARK: -
   
-  open func produce<T: ProducerTaskProtocol>(new task: T) { observers.forEach { $0.task(self, didProduce: task) } }
+  open func produce<T: ProducerTaskProtocol>(new task: T) { self.observers.forEach { $0.task(self, didProduce: task) } }
   
   // MARK: -
   
   private var hasFinishedAlready = false
   
   open func finish(with produced: Produced) {
-    if !hasFinishedAlready {
+    if !self.hasFinishedAlready {
       self.produced = produced
-      hasFinishedAlready = true
-      state = .finishing
+      self.hasFinishedAlready = true
+      self.state = .finishing
       let block = {
         self.producedCompletionBlock?(produced)
         if case let .success(value) = produced { self.assignBlock?(value) }
       }
-      if let recieveQueue = recieveQueue {
+      if let recieveQueue = self.recieveQueue {
         recieveQueue.async { block() }
       } else {
         block()
       }
-      finished(with: produced)
-      observers.forEach { $0.taskDidFinish(self) }
-      state = .finished
+      self.finished(with: produced)
+      self.observers.forEach { $0.taskDidFinish(self) }
+      self.state = .finished
     }
   }
   
@@ -209,23 +214,21 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   // MARK: -
   
   @available(*, unavailable)
-  open override func addDependency(_ operation: Operation) {
-    super.addDependency(operation)
-  }
+  open override func addDependency(_ operation: Operation) { super.addDependency(operation) }
   
   @available(*, unavailable)
-  open override func removeDependency(_ operation: Operation) {}
+  open override func removeDependency(_ operation: Operation) { super.removeDependency(operation) }
   
   @discardableResult
   open func addDependency<T: ProducerTaskProtocol>(_ task: T) -> Self {
-    precondition(state < .executing, "Dependencies cannot be modified after execution has begun.")
+    precondition(self.state < .executing, "Dependencies cannot be modified after execution has begun.")
     super.addDependency(task)
     return self
   }
   
   @discardableResult
   open func removeDependency<T: ProducerTaskProtocol>(_ task: T) -> Self {
-    precondition(state < .executing, "Dependencies cannot be modified after execution has begun.")
+    precondition(self.state < .executing, "Dependencies cannot be modified after execution has begun.")
     super.removeDependency(task)
     return self
   }
@@ -236,7 +239,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   @discardableResult
   open func recieve(on queue: DispatchQueue) -> Self {
-    recieveQueue = queue
+    self.recieveQueue = queue
     return self
   }
   
@@ -253,13 +256,13 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   
   @discardableResult
   open func recieve(completion: @escaping (Produced) -> Void) -> Self {
-    if let existing = producedCompletionBlock {
-      producedCompletionBlock = {
+    if let existing = self.producedCompletionBlock {
+      self.producedCompletionBlock = {
         existing($0)
         completion($0)
       }
     } else {
-      producedCompletionBlock = completion
+      self.producedCompletionBlock = completion
     }
     return self
   }
@@ -267,13 +270,13 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   @discardableResult
   open func assign<Root>(to keyPath: ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Self {
     let block: (Output) -> Void = { object[keyPath: keyPath] = $0 }
-    if let existing = assignBlock {
-      assignBlock = {
+    if let existing = self.assignBlock {
+      self.assignBlock = {
         existing($0)
         block($0)
       }
     } else {
-      assignBlock = block
+      self.assignBlock = block
     }
     return self
   }
@@ -281,7 +284,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   // MARK: -
   
   @available(*, unavailable)
-  public override init() {}
+  public override init() { super.init() }
   
   public init(
     name: String? = nil,
@@ -290,8 +293,8 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
   ) {
     super.init()
     self.name = name ?? String(describing: Self.self)
-    qualityOfService = qos
-    queuePriority = priority
+    self.qualityOfService = qos
+    self.queuePriority = priority
   }
 }
 
@@ -337,6 +340,14 @@ extension ProducerTask._State: Comparable {
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 extension ProducerTask {
   
+  public enum ProducerTaskError: Swift.Error { case conditionsFailure, executionFailure }
+  
+  public typealias Error = ProducerTaskError
+}
+
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
+extension ProducerTask {
+  
   @inlinable
   public func map<NewOutput>(
     _ transform: @escaping (Output) -> NewOutput
@@ -359,7 +370,7 @@ extension ProducerTask {
   }
   
   @inlinable
-  public func mapError<NewFailure: Error>(
+  public func mapError<NewFailure: Swift.Error>(
     _ transform: @escaping (Failure) -> NewFailure
   ) -> Tasks.MapError<Output, Failure, NewFailure> {
     .init(from: self, transform: transform)
@@ -377,7 +388,7 @@ extension ProducerTask {
 extension ProducerTask where Failure == Never {
   
   @inlinable
-  public func setFailureType<NewFailure: Error>(
+  public func setFailureType<NewFailure: Swift.Error>(
     to failureType: NewFailure.Type
   ) -> Tasks.SetFailureType<Output, NewFailure> {
     .init(from: self)

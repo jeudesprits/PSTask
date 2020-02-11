@@ -8,10 +8,10 @@
 import Foundation
 
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
-public enum ProducerTaskProtocolError<Failure: Error>: Error {
+public enum ProducerTaskSeparateError<Failure: Error>: Error {
   
-  case internalFailure(Error)
-  case providedFailure(Failure)
+  case `internal`(Error)
+  case provided(Failure)
 }
 
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
@@ -22,11 +22,13 @@ public protocol ProducerTaskProtocol: Operation {
   
   // MARK: -
   
-  typealias Produced = Result<Output, ProducerTaskProtocolError<Failure>>
+  typealias Produced = Result<Output, ProducerTaskSeparateError<Failure>>
 
   var produced: Produced? { get }
   
   // MARK: -
+  
+  var mutuallyExclusiveConditions: [String: AnyCondition] { get }
   
   var conditions: [AnyCondition] { get }
   
@@ -79,6 +81,8 @@ public protocol ProducerTaskProtocol: Operation {
   @discardableResult
   func assign<Root>(to keyPath: ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Self
 }
+
+// MARK: -
 
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public enum Tasks {}

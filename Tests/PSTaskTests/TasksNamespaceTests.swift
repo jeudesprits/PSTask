@@ -46,7 +46,7 @@ final class TasksNamespaceTests: XCTestCase {
          priority: .veryHigh
        ) { (task, finish) in
          Thread.sleep(forTimeInterval: 2)
-         finish(.failure(.providedFailure("Ooops")))
+         finish(.failure(.provided("Ooops")))
        }.map {
          "\($0)"
        }.recieve {
@@ -79,7 +79,7 @@ final class TasksNamespaceTests: XCTestCase {
         throw "Ooops"
       }.recieve {
         switch $0 {
-        case let .failure(.providedFailure(error as String)):
+        case let .failure(.provided(error as String)):
           XCTAssertEqual(error, "Ooops")
           expec1.fulfill()
         default:
@@ -147,7 +147,7 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (task, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }.flatMap { (value) in
         BlockProducerTask<Int, String> { (_, finish) in
           Thread.sleep(forTimeInterval: 2)
@@ -155,7 +155,7 @@ final class TasksNamespaceTests: XCTestCase {
         }
       }.recieve {
         switch $0 {
-        case let .failure(.providedFailure(error)):
+        case let .failure(.provided(error)):
           XCTAssertEqual(error, "Ooops")
           expec2.fulfill()
         default:
@@ -180,12 +180,12 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Oopps")))
+        finish(.failure(.provided("Oopps")))
       }.mapError {
         OoopsError.ooops($0)
       }.recieve {
         switch $0 {
-        case let .failure(.providedFailure(.ooops(value))):
+        case let .failure(.provided(.ooops(value))):
           XCTAssertEqual(value, "Oopps")
           expec1.fulfill()
         default:
@@ -234,11 +234,11 @@ final class TasksNamespaceTests: XCTestCase {
        .flatMap { _ in
           BlockProducerTask<Int, String> { (_, finish) in
             Thread.sleep(forTimeInterval: 2)
-            finish(.failure(.providedFailure("Ooops")))
+            finish(.failure(.provided("Ooops")))
           }
       }.recieve {
         switch $0 {
-        case let.failure(.providedFailure(error)):
+        case let.failure(.provided(error)):
           XCTAssertEqual(error, "Ooops")
           expec.fulfill()
         default:
@@ -265,7 +265,7 @@ final class TasksNamespaceTests: XCTestCase {
         $0 == 21 ? nil : 100
       }.recieve {
         switch $0 {
-        case let .failure(.internalFailure(error as ProducerTaskError)):
+        case let .failure(.internal(error as ProducerTaskError)):
           XCTAssertEqual(error, ProducerTaskError.executionFailure)
           expec1.fulfill()
         default:
@@ -318,7 +318,7 @@ final class TasksNamespaceTests: XCTestCase {
         }
       }.recieve {
         switch $0 {
-        case let .failure(.providedFailure(error as String)):
+        case let .failure(.provided(error as String)):
           XCTAssertEqual(error, "Ooops")
           expec1.fulfill()
         default:
@@ -339,7 +339,7 @@ final class TasksNamespaceTests: XCTestCase {
         $0 == 21 ? nil : 100
       }.recieve {
         switch $0 {
-        case let .failure(.internalFailure(error as ProducerTaskError)):
+        case let .failure(.internal(error as ProducerTaskError)):
           XCTAssertEqual(error, ProducerTaskError.executionFailure)
           expec2.fulfill()
         default:
@@ -384,12 +384,12 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }.replaceEmpty {
           100
       }.recieve {
         switch $0 {
-        case let .failure(.providedFailure(error)):
+        case let .failure(.provided(error)):
           XCTAssertEqual(error, "Ooops")
           expec2.fulfill()
         default:
@@ -412,7 +412,7 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }.replaceError { _ in
         21
       }.recieve {
@@ -481,11 +481,11 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }.ignoreOutput()
        .recieve {
           switch $0 {
-          case let .failure(.providedFailure(error)):
+          case let .failure(.provided(error)):
             XCTAssertEqual(error, "Ooops")
             expec2.fulfill()
           default:
@@ -540,7 +540,7 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }
     
     let task22 =
@@ -555,7 +555,7 @@ final class TasksNamespaceTests: XCTestCase {
     let task2 =
       task21.zip(task22).recieve {
         switch $0 {
-        case let .failure(.providedFailure(error)):
+        case let .failure(.provided(error)):
           XCTAssertEqual(error, "Ooops")
           expec2.fulfill()
         default:
@@ -598,7 +598,7 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (task, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }.catch { _ in
         BlockProducerTask<Int, String> { (_, finish) in
           Thread.sleep(forTimeInterval: 2)
@@ -653,7 +653,7 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (task, finish) -> Void in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }.tryCatch { (error) -> BlockProducerTask<Int, String> in
         guard error != "Ooops" else { throw "Nooo" }
         return BlockProducerTask { (_, finish) in
@@ -662,7 +662,7 @@ final class TasksNamespaceTests: XCTestCase {
         }
       }.recieve {
         switch $0 {
-        case let .failure(.providedFailure(error as String)):
+        case let .failure(.provided(error as String)):
           XCTAssertEqual(error, "Nooo")
           expec1.fulfill()
         default:
@@ -678,7 +678,7 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (task, finish) -> Void in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Nooo")))
+        finish(.failure(.provided("Nooo")))
       }.tryCatch { (error) -> BlockProducerTask<Int, String> in
         guard error != "Ooops" else { throw "Nooo" }
         return BlockProducerTask { (_, finish) in
@@ -762,11 +762,11 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }.decode(type: User.self, decoder: JSONDecoder())
        .recieve {
           switch $0 {
-          case let .failure(.providedFailure(error as String)):
+          case let .failure(.provided(error as String)):
             XCTAssertEqual(error, "Ooops")
             expec2.fulfill()
           default:
@@ -815,11 +815,11 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }.encode(encoder: JSONEncoder())
        .recieve {
           switch $0 {
-          case let .failure(.providedFailure(error as String)):
+          case let .failure(.provided(error as String)):
             XCTAssertEqual(error, "Ooops")
             expec2.fulfill()
           default:
@@ -863,12 +863,12 @@ final class TasksNamespaceTests: XCTestCase {
         priority: .veryHigh
       ) { (_, finish) in
         Thread.sleep(forTimeInterval: 2)
-        finish(.failure(.providedFailure("Ooops")))
+        finish(.failure(.provided("Ooops")))
       }
       .map(\.self, \.count)
       .recieve {
         switch $0 {
-        case let .failure(.providedFailure(error)):
+        case let .failure(.provided(error)):
           XCTAssertEqual(error, "Ooops")
           expec2.fulfill()
         default:

@@ -24,15 +24,15 @@ extension Tasks {
           priority: from.queuePriority
         ) { (task, finish) in
           guard let consumed = from.produced else {
-            finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
+            finish(.failure(.internal(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
           switch consumed {
           case let .success(value):
             finish(.success(value))
-          case let .failure(.internalFailure(error)):
-            finish(.failure(.internalFailure(error)))
+          case let .failure(.internal(error)):
+            finish(.failure(.internal(error)))
           }
         }.addDependency(from)
       

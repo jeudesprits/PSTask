@@ -38,7 +38,7 @@ open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Out
   
   open override func execute() {
     guard let consumed = consumed else {
-      finish(with: .failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
+      finish(with: .failure(.internal(Error.producingFailure)))
       return
     }
     
@@ -59,6 +59,11 @@ open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Out
     super.init(name: name, qos: qos, priority: priority)
     addDependency(producing)
   }
+}
+
+extension ConsumerProducerTask {
+  
+  public typealias Error = ConsumerProducerTaskError
 }
 
 // MARK: -

@@ -49,12 +49,12 @@ final class AdditionalTasksTests: XCTestCase {
         qos: .userInitiated, priority: .veryHigh
       ) { (task, finish) in
         Thread.sleep(forTimeInterval: 1.0)
-        finish(.failure(.providedFailure("Oops")))
+        finish(.failure(.provided("Oops")))
       }.recieve {
         switch $0 {
-        case .success, .failure(.internalFailure):
+        case .success, .failure(.internal):
           XCTFail()
-        case let .failure(.providedFailure(error)):
+        case let .failure(.provided(error)):
           XCTAssertEqual(error, "Oops")
         }
         

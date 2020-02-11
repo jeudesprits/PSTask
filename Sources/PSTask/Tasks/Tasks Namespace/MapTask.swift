@@ -26,7 +26,7 @@ extension Tasks {
           producing: from
         ) { (task, consumed, finish) in
           guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            finish(.failure(.internal(ProducerTaskError.executionFailure)))
             return
           }
           

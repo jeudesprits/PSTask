@@ -27,7 +27,7 @@ extension Tasks {
           producing: from
         ) { (task, consumed, finish) in
           guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            finish(.failure(.internal(ProducerTaskError.executionFailure)))
             return
           }
           
@@ -46,16 +46,16 @@ extension Tasks {
             }
             finish(.success(value))
           
-          case let .failure(.internalFailure(error)):
-            finish(.failure(.internalFailure(error)))
+          case let .failure(.internal(error)):
+            finish(.failure(.internal(error)))
           
-          case let .failure(.providedFailure(error)):
+          case let .failure(.provided(error)):
             if let receiveFailure = receiveFailure?(error), receiveFailure {
               #if DEBUG
               raise(SIGTRAP)
               #endif
             }
-            finish(.failure(.providedFailure(error)))
+            finish(.failure(.provided(error)))
           }
         }
       

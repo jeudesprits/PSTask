@@ -36,7 +36,7 @@ extension Tasks {
           producing: from
         ) { [unowned self] (task, consumed, finish) in
             guard !task.isCancelled else {
-              finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+              finish(.failure(.internal(ProducerTaskError.executionFailure)))
               return
             }
             
@@ -44,10 +44,10 @@ extension Tasks {
             case let .success(value):
               self.finish(with: .success(value))
               
-            case let .failure(.internalFailure(error)):
-              self.finished(with: .failure(.internalFailure(error)))
+            case let .failure(.internal(error)):
+              self.finished(with: .failure(.internal(error)))
               
-            case let .failure(.providedFailure(error)):
+            case let .failure(.provided(error)):
               let newTask = handler(error).recieve { (produced) in self.finish(with: produced) }
               newTask.name = "\(name).Produced"
               newTask.qualityOfService = from.qualityOfService

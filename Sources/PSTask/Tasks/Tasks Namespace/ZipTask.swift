@@ -32,14 +32,14 @@ extension Tasks {
           priority: maxPriority
         ) { (task, finish) in
           guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            finish(.failure(.internal(ProducerTaskError.executionFailure)))
             return
           }
           
           guard let consumed1 = tasks.0.produced,
                 let consumed2 = tasks.1.produced else
           {
-            finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
+            finish(.failure(.internal(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
@@ -101,7 +101,7 @@ extension Tasks {
           priority: maxPriority
         ) { (task, finish) in
           guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            finish(.failure(.internal(ProducerTaskError.executionFailure)))
             return
           }
           
@@ -109,7 +109,7 @@ extension Tasks {
             let consumed2 = tasks.1.produced,
             let consumed3 = tasks.2.produced else
           {
-            finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
+            finish(.failure(.internal(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
@@ -181,7 +181,7 @@ extension Tasks {
           priority: maxPriority
         ) { (task, finish) in
           guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            finish(.failure(.internal(ProducerTaskError.executionFailure)))
             return
           }
           
@@ -190,7 +190,7 @@ extension Tasks {
                 let consumed3 = tasks.2.produced,
                 let consumed4 = tasks.3.produced else
           {
-            finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
+            finish(.failure(.internal(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
@@ -270,7 +270,7 @@ extension Tasks {
           priority: maxPriority
         ) { (task, finish) in
           guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            finish(.failure(.internal(ProducerTaskError.executionFailure)))
             return
           }
           
@@ -280,7 +280,7 @@ extension Tasks {
                 let consumed4 = tasks.3.produced,
                 let consumed5 = tasks.4.produced else
           {
-            finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
+            finish(.failure(.internal(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
@@ -368,7 +368,7 @@ extension Tasks {
           priority: maxPriority
         ) { (task, finish) in
           guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            finish(.failure(.internal(ProducerTaskError.executionFailure)))
             return
           }
           
@@ -379,7 +379,7 @@ extension Tasks {
             let consumed5 = tasks.4.produced,
             let consumed6 = tasks.5.produced else
           {
-            finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
+            finish(.failure(.internal(ConsumerProducerTaskError.producingFailure)))
             return
           }
           

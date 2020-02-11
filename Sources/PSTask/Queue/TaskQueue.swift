@@ -104,14 +104,8 @@ open class TaskQueue: OperationQueue {
     // dependencies to enforce mutual exclusivity.
     let categories =
       task
-        .conditions
-        .compactMap { (condition) -> String? in
-          let describing = String(describing: type(of: condition.box))
-          guard describing.contains("MutuallyExclusive") else { return nil }
-          let leftIndex = describing.index(describing.startIndex, offsetBy: 17)
-          let rightIndex = describing.index(describing.endIndex, offsetBy: -2)
-          return String(describing[leftIndex...rightIndex])
-        }
+        .mutuallyExclusiveConditions
+        .map { $0.key }
     
     if !categories.isEmpty {
       // Set up the mutual exclusivity dependencies.

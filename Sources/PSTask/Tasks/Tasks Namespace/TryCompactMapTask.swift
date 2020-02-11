@@ -25,12 +25,12 @@ extension Tasks {
           priority: from.queuePriority
         ) { (task, finish) in
           guard !task.isCancelled else {
-            finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+            finish(.failure(.internal(ProducerTaskError.executionFailure)))
             return
           }
           
           guard let consumed = from.produced else {
-            finish(.failure(.internalFailure(ConsumerProducerTaskError.producingFailure)))
+            finish(.failure(.internal(ConsumerProducerTaskError.producingFailure)))
             return
           }
           
@@ -39,15 +39,15 @@ extension Tasks {
               if let newValue = try transform(value) {
                 finish(.success(newValue))
               } else {
-                finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+                finish(.failure(.internal(ProducerTaskError.executionFailure)))
               }
             } catch {
-              finish(.failure(.providedFailure(error)))
+              finish(.failure(.provided(error)))
             }
-          } else if case let .failure(.internalFailure(error)) = consumed {
-            finish(.failure(.internalFailure(error)))
-          } else if case let .failure(.providedFailure(error)) = consumed {
-            finish(.failure(.providedFailure(error)))
+          } else if case let .failure(.internal(error)) = consumed {
+            finish(.failure(.internal(error)))
+          } else if case let .failure(.provided(error)) = consumed {
+            finish(.failure(.provided(error)))
           }
         }.addDependency(from)
       

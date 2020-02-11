@@ -21,7 +21,7 @@ public final class GatedTask: NonFailTask {
   
   public override func execute() {
     guard !isCancelled else {
-      finish(with: .failure(.internalFailure(ProducerTaskError.executionFailure)))
+      finish(with: .failure(.internal(ProducerTaskError.executionFailure)))
       return
     }
     
@@ -33,7 +33,7 @@ public final class GatedTask: NonFailTask {
     isCancelObserver =
       operation.observe(\.isCancelled, options: [.initial, .new]) { [unowned self] (_, change) in
         guard let isCancelled = change.newValue else { return }
-        if isCancelled { self.finish(with: .failure(.internalFailure(ProducerTaskError.executionFailure))) }
+        if isCancelled { self.finish(with: .failure(.internal(ProducerTaskError.executionFailure))) }
       }
     isFinishObserver =
       operation.observe(\.isFinished, options: [.initial, .new]) { [unowned self] (operation, change) in
