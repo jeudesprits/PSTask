@@ -22,6 +22,11 @@ extension Result where Success == Void {
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 public typealias NonFailTask = ProducerTask<Void, Never>
 
+// MARK: -
+
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
+public enum ProducerTaskError: Error { case conditionsFailure(errors: [Error]), executionFailure }
+
 // TODO: - Добавить поддержку `Identifiable`.
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol {
@@ -105,7 +110,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
           }
         }
 
-      if !errors.isEmpty { self.produced = .failure(.internal(Error.conditionsFailure(errors: errors))) }
+      if !errors.isEmpty { self.produced = .failure(.internal(ProducerTaskError.conditionsFailure(errors: errors))) }
 
       self.state = .ready
     }
@@ -155,7 +160,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
     // `Operation.start()` method contains important logic that shouldn't be bypassed.
     super.start()
     // If the operation has been cancelled, we still need to enter the `.finished` state.
-    if self.isCancelled { self.finish(with: self.produced ?? .failure(.internal(Error.executionFailure))) }
+    if self.isCancelled { self.finish(with: self.produced ?? .failure(.internal(ProducerTaskError.executionFailure))) }
   }
   
   open override func cancel() {
@@ -171,7 +176,7 @@ open class ProducerTask<Output, Failure: Error>: Operation, ProducerTaskProtocol
       self.observers.forEach { $0.taskDidStart(self) }
       self.execute()
     } else {
-      self.finish(with: self.produced ?? .failure(.internal(Error.executionFailure)))
+      self.finish(with: self.produced ?? .failure(.internal(ProducerTaskError.executionFailure)))
     }
   }
   
@@ -335,14 +340,6 @@ extension ProducerTask._State: Comparable {
   internal static func < (lhs: Self, rhs: Self) -> Bool { lhs.rawValue < rhs.rawValue }
   
   internal static func == (lhs: Self, rhs: Self) -> Bool { lhs.rawValue == rhs.rawValue }
-}
-
-@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
-extension ProducerTask {
-  
-  public enum ProducerTaskError: Swift.Error { case conditionsFailure(errors: [Swift.Error]), executionFailure }
-  
-  public typealias Error = ProducerTaskError
 }
 
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)

@@ -19,6 +19,9 @@ public typealias NonFailConsumerTask<Input> = ConsumerTask<Input, Never>
 // MARK: -
 
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
+public enum ConsumerProducerTaskError: Error { case producingFailure }
+
+@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
 open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Output, Failure>, ConsumerProducerTaskProtocol {
   
   public typealias Input = Input
@@ -35,7 +38,7 @@ open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Out
   
   open override func execute() {
     guard let consumed = self.consumed else {
-      self.finish(with: .failure(.internal(Error.producingFailure)))
+      self.finish(with: .failure(.internal(ConsumerProducerTaskError.producingFailure)))
       return
     }
     
@@ -56,14 +59,6 @@ open class ConsumerProducerTask<Input, Output, Failure: Error>: ProducerTask<Out
     super.init(name: name, qos: qos, priority: priority)
     self.addDependency(producing)
   }
-}
-
-@available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 13.0, macCatalyst 13.0, *)
-extension ConsumerProducerTask {
-  
-  public enum ConsumerProducerTaskError: Swift.Error { case producingFailure }
-  
-  public typealias Error = ConsumerProducerTaskError
 }
 
 // MARK: -
