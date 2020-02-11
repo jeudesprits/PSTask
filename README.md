@@ -67,13 +67,13 @@ let task = // Group Task contains (#1, #2, #3, #4) as chain
     priority: .veryHigh
   ) { (task, finish) in
     guard !task.isCancelled else {
-      finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+      finish(.failure(.internal(ProducerTaskError.executionFailure)))
       return
     }
     
     URLSession.shared.dataTask(with: URL(string: "...")!) { (data, response, error) in
       if let error = error {
-        finish(.failure(.providedFailure(.clientError(error))))
+        finish(.failure(.provided(.clientError(error))))
         return
       }
       
@@ -175,13 +175,13 @@ final class MyFirstProducerTask: ProducerTask<Data?, MyFirstProducerTaskError> {
     
     urlTask = URLSession.shared.dataTask(with: url) { data, response, error in
       guard !task.isCancelled else {
-          finish(.failure(.internalFailure(ProducerTaskError.executionFailure)))
+          finish(.failure(.internal(ProducerTaskError.executionFailure)))
           return
         }
         
       URLSession.shared.dataTask(with: URL(string: "...")!) { (data, response, error) in
         if let error = error {
-          finish(.failure(.providedFailure(.clientError(error))))
+          finish(.failure(.provided(.clientError(error))))
           return
         }
       
@@ -189,12 +189,12 @@ final class MyFirstProducerTask: ProducerTask<Data?, MyFirstProducerTaskError> {
         if let httpResponse = httpResponse,
            (200...299).contains(httpResponse.statusCode)
         {
-          finish(.failure(.providedFailure(.serverError(httpResponse))))
+          finish(.failure(.provided(.serverError(httpResponse))))
           return
         }
       
         if let mimeType = httpResponse!.mimeType, mimeType == "application/json" {
-          finish(.failure(.providedFailure(.mimeTypeError(mimeType))))
+          finish(.failure(.provided(.mimeTypeError(mimeType))))
           return
         }
       
@@ -223,8 +223,8 @@ Because the task itself, or rather its internal implementation, may contain its 
 ```swift
 enum ProducerTaskProtocolError<Failure: Error>: Error {
 
-  case internalFailure(Error)
-  case providedFailure(Failure)
+  case internal(Error)
+  case provided(Failure)
 }
 ```
 
@@ -237,7 +237,7 @@ class MyTask<Output, Failure: Error>: ProducerTask<Output, Failure> {
   
   private func someInternalMethod() {
     // error...
-    finish(with: .failure(.internalFailure(ErrorMyTaskError.oops)))
+    finish(with: .failure(.internal(ErrorMyTaskError.oops)))
   }
 }
 
@@ -247,7 +247,7 @@ final class UsersTask: MyTask<Int, UsersError> {
   
   override func execute() {
     // error...
-    finish(with: .failure(.providedFailure(.someFailure)))
+    finish(with: .failure(.provided(.someFailure)))
   }
 }
 ```
@@ -274,7 +274,7 @@ final class MyTask: Task<MyTaskError> {
   
   override func execute() {
     guard ... else {
-      finish(with: .failure(.providedFailure(.oops)))
+      finish(with: .failure(.provided(.oops)))
       return
     }
     
@@ -329,7 +329,7 @@ final class MyTask: Task<SomeError> {
     switch produced {
     case .success:
        // ...
-    case let .failure(.providedFailure(error)):
+    case let .failure(.provided(error)):
       // ...
     }
     
@@ -351,7 +351,7 @@ let t1 =
       switch produced {
       case let .success(value):
         // ...
-      case let .failure(.providedFailure(error)):
+      case let .failure(.provided(error)):
         // ...
       }
     })
@@ -364,7 +364,7 @@ let t2 =
       switch $0 {
       case let .success(value):
         // ...
-      case let .failure(.providedFailure(error)):
+      case let .failure(.provided(error)):
         // ...
       }
     }
@@ -452,7 +452,7 @@ let t =
       switch $0 {
       case let .success(value):
       // ...
-      case let .failure(.providedFailure(error)):
+      case let .failure(.provided(error)):
         // ...
       }
     }
@@ -610,7 +610,7 @@ final class GetImageTask: GroupProducerTask<UIImage, SomeError> {
          switch produced {
          case let .success(image):
            self.finish(image)
-         case let .failure(.providedFailure(...))
+         case let .failure(.provided(...))
            // ...
          }
        }
