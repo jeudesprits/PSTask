@@ -40,29 +40,29 @@ final class TasksNamespaceTests: XCTestCase {
     
     let expec2 = XCTestExpectation()
     
-//    let task2 =
-//       BlockProducerTask<Int, String>(
-//         qos: .userInitiated,
-//         priority: .veryHigh
-//       ) { (task, finish) in
-//         Thread.sleep(forTimeInterval: 2)
-//         finish(.failure(.provided("Ooops")))
-//       }.map {
-//         "\($0)"
-//       }.recieve {
-//         switch $0 {
-//         case .success:
-//           XCTFail()
-//         case .failure:
-//           XCTAssertTrue(true)
-//           expec2.fulfill()
-//         }
-//       }
+    let task2 =
+       BlockProducerTask<Int, String>(
+         qos: .userInitiated,
+         priority: .veryHigh
+       ) { (task, finish) in
+         Thread.sleep(forTimeInterval: 2)
+         finish(.failure(.provided("Ooops")))
+       }.map {
+         "\($0)"
+       }.recieve {
+         switch $0 {
+         case .success:
+           XCTFail()
+         case .failure:
+           XCTAssertTrue(true)
+           expec2.fulfill()
+         }
+       }
     
     self.queue.addTask(task1)
-   // self.queue.addTask(task2)
+    self.queue.addTask(task2)
     
-    self.wait(for: [expec1], timeout: 3)
+    self.wait(for: [expec1, expec2], timeout: 3)
   }
   
   func testTryMapTask() {
